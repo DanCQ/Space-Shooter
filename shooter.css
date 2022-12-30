@@ -21,6 +21,7 @@ canvas {
     position:absolute;
 }
 
+
 .portfolio {
     position:absolute;
         top:10px;
@@ -37,3 +38,45 @@ canvas {
     position:absolute;
     width:90px;
 }
+
+
+@media (max-width: 1200px) {
+
+    #spacecraft {
+        width:85px;
+    }
+
+}
+
+@media (max-width: 1000px) {
+
+    #spacecraft {
+        width:80px;
+    }
+
+}
+
+@media (max-width: 800px) {
+
+    #spacecraft {
+        width:75px;
+    }
+
+}
+
+@media (max-width: 600px) {
+
+    #spacecraft {
+        width:70px;
+    }
+
+}
+
+@media (max-width: 400px) {
+
+    #spacecraft {
+        width:65px;
+    }
+
+}
+
