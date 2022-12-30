@@ -58,13 +58,6 @@ const colorArray = [
 ];
 
 
-//Returns a random number within a chosen range
-function randomRange(min,max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-//Math.floor() rounds down to the nearest whole number  e.i. 10 = 0 - 9  
-//Math.random() returns a random decimal between 0 - 0.99
-}
-
 //used for screen resizing
 function backgroundDisplay() {
 
@@ -82,6 +75,14 @@ function backgroundDisplay() {
             
         starArr.push(star);
     }  
+}
+
+
+//Returns a random number within a chosen range
+function randomRange(min,max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+//Math.floor() rounds down to the nearest whole number  e.i. 10 = 0 - 9  
+//Math.random() returns a random decimal between 0 - 0.99
 }
 
 
@@ -127,7 +128,6 @@ class Player {
             x: x,
             y: y
         };
-
     }
 
     update() {
@@ -139,7 +139,6 @@ class Player {
             x: userVx,
             y: userVy
         };
-
     };
 }
 
@@ -265,7 +264,6 @@ canvas.addEventListener("click", function(event) {
  
     //gets mouse angle from ship. coordinate y first, then x
     angle = Math.atan2(event.y - user.y, event.x - user.x);
-    let color = colorArray[randomRange(0, colorArray.length - 1)];
 
     //sends fire at this angle
     let target = {
@@ -290,7 +288,6 @@ canvas.addEventListener("mousemove", function(event) {
 
     mouse.x = event.x;
     mouse.y = event.y;
-    
 });
 
 
