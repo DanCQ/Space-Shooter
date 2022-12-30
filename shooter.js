@@ -65,6 +65,25 @@ function randomRange(min,max) {
 //Math.random() returns a random decimal between 0 - 0.99
 }
 
+//used for screen resizing
+function backgroundDisplay() {
+
+    starArr = [];
+
+    //background galaxy 
+    for(let i = 0; i < 500; i++) {
+        //makes up for offset of screen in rotation animation
+        let x = randomRange(-screenWidth, screenWidth); 
+        let y = randomRange(-screenHeight, screenHeight);
+        let color = colorArray[randomRange(0, colorArray.length - 1)];
+        let radius = randomRange(0.6, 1);
+            
+        let star = new Galaxy(x, y, radius, color);
+            
+        starArr.push(star);
+    }  
+}
+
 
 //background galaxy blueprint
 class Galaxy {
@@ -164,17 +183,7 @@ class Torpedo {
 function creator() {
 
     //background galaxy
-    for(let i = 0; i < 500; i++) {
-
-        let x = randomRange(-screenWidth, screenWidth); //makes up for offset of screen in animation
-        let y = randomRange(-screenHeight, screenHeight);
-        let color = colorArray[randomRange(0, colorArray.length - 1)];
-        let radius = randomRange(0.6, 1);
-        
-        let star = new Galaxy(x, y, radius, color);
-        
-        starArr.push(star);
-    }  
+    backgroundDisplay();
 
     //player object
     user = new Player(screenWidth / 2, screenHeight / 2);
@@ -182,7 +191,7 @@ function creator() {
 }
 
 
-function animate() {
+function animate() {  
 
     requestAnimationFrame(animate);
 
@@ -309,12 +318,11 @@ setTimeout(function() {
         
         //Only way found to avoid a canvas resize bug on mobile
         setTimeout(function() {
-            location.reload();
-            /* 
             screenHeight = window.innerHeight;
             screenWidth = window.innerWidth;
             canvas.height = screenHeight;
-            canvas.width = screenWidth; */
+            canvas.width = screenWidth;
+            backgroundDisplay(); //redeploy stars
         },100);
     });
 
