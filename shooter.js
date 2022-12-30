@@ -98,9 +98,9 @@ class Galaxy {
     draw() {
         c.beginPath();
         c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-        c.shadowColor = `${this.color}`;
+        c.shadowColor = this.color;
         c.shadowBlur = 15;
-        c.fillStyle = `${this.color}`;
+        c.fillStyle = this.color;
         c.fill();
         c.closePath();
     }
@@ -146,10 +146,10 @@ class Player {
 
 //object blueprint
 class Torpedo {
-    constructor(x, y, tx, ty, color) {
+    constructor(x, y, tx, ty) {
         this.x = x;
         this.y = y;
-        this.color = color;
+        this.color = "lightsalmon";
         this.target = {
             x: tx * 4,
             y: ty * 4
@@ -159,7 +159,7 @@ class Torpedo {
 
     draw(previous) {
         c.beginPath();
-        c.strokeStyle = 'cyan';
+        c.strokeStyle = this.color;
         c.lineWidth = 2.5;
         c.moveTo(previous.x, previous.y);
         c.lineTo(this.x, this.y);
@@ -274,9 +274,9 @@ canvas.addEventListener("click", function(event) {
     }
     //starts from user location
     if(inverted) { 
-        fire = new Torpedo(user.x - spacecraft.offsetWidth / 2, user.y, target.x, target.y, color);
+        fire = new Torpedo(user.x - spacecraft.offsetWidth / 2, user.y, target.x, target.y);
     } else {
-        fire = new Torpedo(user.x, user.y, target.x, target.y, color);
+        fire = new Torpedo(user.x, user.y, target.x, target.y);
     }
 
     fireArr.push(fire);
