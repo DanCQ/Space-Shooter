@@ -22,7 +22,7 @@ let mouse = {
 //background
 let alpha = 0.8;
 let starArr = []; //object array
-let radians = 0.00015;
+let radians = 0.00020;
 let slow = false;
 
 //game objects
@@ -209,7 +209,7 @@ function animate() {
     });
     c.restore();
 
-    radians += 0.00015;
+    radians += 0.00020;
 
     if(slow) {
         if(alpha > 0.001) {
