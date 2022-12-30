@@ -8,7 +8,7 @@ body {
     min-width:100vw;
     overflow: hidden;
     user-select: none;
-    -webkit-touch-callout: none;
+    
 }
 
 canvas {
@@ -20,6 +20,7 @@ canvas {
 
 .craft {
     position:absolute;
+    -webkit-touch-callout: none;
 }
 
 
