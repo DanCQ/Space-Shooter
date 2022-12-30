@@ -149,7 +149,7 @@ class Torpedo {
     constructor(x, y, tx, ty) {
         this.x = x;
         this.y = y;
-        this.color = "lightsalmon";
+        this.color = "cyan";
         this.target = {
             x: tx * 4,
             y: ty * 4
