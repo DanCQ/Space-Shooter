@@ -1,0 +1,39 @@
+body {
+    background-color: black;
+    display:flex;
+        align-items: center;
+        justify-content: center;
+    margin:0;
+    min-height:100vh;
+    min-width:100vw;
+    overflow: hidden;
+    user-select: none;
+}
+
+canvas {
+    background-color: black;
+    cursor:crosshair;
+    height:100%;
+    width:100%;
+}
+
+.craft {
+    position:absolute;
+}
+
+.portfolio {
+    position:absolute;
+        top:10px;
+    visibility:hidden;
+}
+
+.portfolio a {
+    color:oldlace;
+    opacity:0.3;
+    text-decoration: none;
+}
+
+#spacecraft {
+    position:absolute;
+    width:90px;
+}
