@@ -157,15 +157,21 @@ class Torpedo {
         this.width = 2.5;
     }
 
-    draw() {
+    draw(previous) {
         c.beginPath();
-        c.arc(this.x, this.y, this.width, 0, Math.PI * 2, false);
-        c.fillStyle = `${this.color}`;
-        c.fill();
+        c.strokeStyle = 'cyan';
+        c.lineWidth = 2.5;
+        c.moveTo(previous.x, previous.y);
+        c.lineTo(this.x, this.y);
+        c.stroke();
         c.closePath();
     }
 
     update() {
+        let previous = {
+            x: this.x - this.target.x,
+            y: this.y - this.target.y
+        }
        
         //prevents slowdown by deleting offscreen projectiles
         if(this.x > screenWidth || this.x < 0 || this.y > screenHeight || this.y < 0) {
@@ -175,7 +181,7 @@ class Torpedo {
         this.x += this.target.x;
         this.y += this.target.y;
 
-        this.draw();
+        this.draw(previous);
     }
 }
 
