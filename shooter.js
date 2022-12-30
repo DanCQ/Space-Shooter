@@ -1,6 +1,6 @@
 const canvas = document.getElementById("canvas");
 const portfolio = document.querySelector(".portfolio");
-const spacecraft = document.getElementById("spacecraft");
+const spacecraft = document.getElementById("spacecraft"); //player
 
 let screenHeight = window.innerHeight;
 let screenWidth = window.innerWidth;
@@ -22,16 +22,15 @@ let mouse = {
 //background
 let alpha = 0.8;
 let starArr = []; //object array
-let radians = 0.0003;
+let radians = 0.00015;
 let slow = false;
 
 //game objects
 let enemyArr = []; //enemy object array
-let twister = []; //cursor object
 let fireArr = []; //torpedos object array
-let angle;
-let inverted = false;
-let rotation;
+
+let angle; //for fire and mouse position
+let inverted = false; //direction of ship
 let user; //user interactivity
 let userVx; //user velocity x
 let userVy; //user velocity y
@@ -121,7 +120,7 @@ class Player {
             x: userVx,
             y: userVy
         };
-       
+
     };
 }
 
@@ -149,18 +148,15 @@ class Torpedo {
 
     update() {
        
-        //prevents slowdown by deleting objects
+        //prevents slowdown by deleting offscreen projectiles
         if(this.x > screenWidth || this.x < 0 || this.y > screenHeight || this.y < 0) {
             fireArr.splice(this, 1);
         }
 
-
         this.x += this.target.x;
         this.y += this.target.y;
-        
 
         this.draw();
-        
     }
 }
 
@@ -168,10 +164,10 @@ class Torpedo {
 function creator() {
 
     //background galaxy
-    for(let i = 0; i < 250; i++) {
+    for(let i = 0; i < 500; i++) {
 
-        let x = randomRange(0, screenWidth); //makes up for offset of screen in animation
-        let y = randomRange(0, screenHeight);
+        let x = randomRange(-screenWidth, screenWidth); //makes up for offset of screen in animation
+        let y = randomRange(-screenHeight, screenHeight);
         let color = colorArray[randomRange(0, colorArray.length - 1)];
         let radius = randomRange(0.6, 1);
         
@@ -190,19 +186,32 @@ function animate() {
 
     requestAnimationFrame(animate);
 
-    //c.fillStyle = `rgba(0, 0, 0, ${alpha})`;
-    c.clearRect(0,0,screenWidth,screenHeight);
+    c.fillStyle = `rgba(0, 0, 0, ${alpha})`;
+    c.fillRect(0,0,screenWidth,screenHeight);
+    //c.clearRect(0,0,screenWidth,screenHeight);
 
-
+    c.save();
+    c.translate(screenWidth / 2, screenHeight / 2); //repositions screen
+    c.rotate(radians);
+    
     //animates background
-     starArr.forEach(obj => {
+    starArr.forEach(obj => {
         obj.update();
     });
+    c.restore();
 
-    //animates twister
-    twister.forEach(obj => {
-        obj.update();
-    });
+    radians += 0.00015;
+
+    if(slow) {
+        if(alpha > 0.001) {
+            alpha -= 0.0025;
+        }  
+        radians += 0.005;
+        
+    } else {
+        alpha = 0.8;
+    }
+
 
     //shots
     fireArr.forEach(obj => {
@@ -211,50 +220,85 @@ function animate() {
 
     //player object
     user.update();
+
     
-    rotation = angle;
-    rotation *= 180 / Math.PI; 
-    //spacecraft image follows the mouse while looking correct
+   //spacecraft animations
+    let rotation = angle; //cannot alter angle, used in fire position too
+    rotation *= 180 / Math.PI; //math formula to correctly follow in a circle
+    //makes ship face in mouse direction
     if(mouse.x > user.x + spacecraft.offsetWidth / 2) {
 
         spacecraft.style.transform = `scaleX(-1) scaleY(1) rotate(${-rotation}deg)`;
+        inverted = true;
 
     } else if(mouse.x < user.x - spacecraft.offsetWidth / 2) {
 
         spacecraft.style.transform = `scaleX(-1) scaleY(-1) rotate(${rotation}deg)`;
+        inverted = false;
     }
 
+    //positions ship image and updates movement
     spacecraft.style.left = `${-screenWidth / 2 - (spacecraft.offsetWidth / 2) + user.x}px`;
     spacecraft.style.top = `${-screenHeight / 2 - (spacecraft.offsetHeight / 2) + user.y}px`;
 
-    
 }
 
 
 canvas.addEventListener("click", function(event) {
-    
-    let fire;
 
-    //coordinate y first, then x
+    let fire;
+ 
+    //gets mouse angle from ship. coordinate y first, then x
     angle = Math.atan2(event.y - user.y, event.x - user.x);
     let color = colorArray[randomRange(0, colorArray.length - 1)];
+
+    //sends fire at this angle
     let target = {
         x: Math.cos(angle),
         y: Math.sin(angle)
     }
+    //starts from user location
+    if(inverted) { 
+        fire = new Torpedo(user.x - spacecraft.offsetWidth / 2, user.y, target.x, target.y, color);
+    } else {
+        fire = new Torpedo(user.x, user.y, target.x, target.y, color);
+    }
 
-  
-    fire = new Torpedo(user.x, user.y, target.x, target.y, color);
-    
     fireArr.push(fire);
 });
 
 
 canvas.addEventListener("mousemove", function(event) {
-    mouse.x = event.x;
-    mouse.y = event.y;
+    
+    //gets mouse angle from ship
     angle = Math.atan2(event.y - user.y, event.x - user.x);
 
+    mouse.x = event.x;
+    mouse.y = event.y;
+    
+});
+
+
+spacecraft.addEventListener("click", function() {
+
+    portfolio.style.visibility = "visible";
+
+    time = 10000; //3 seconds, resets on click
+    
+    if(allow) {
+
+        allow = false; //prevents multiple intervals
+
+        off = setInterval(() => {
+            time -= 1000;
+        
+            if(time <= 0) {
+                portfolio.style.visibility = "hidden";
+                clearInterval(off);
+                allow = true;
+            }
+        }, 1000);
+    }
 });
 
 
