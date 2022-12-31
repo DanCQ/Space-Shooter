@@ -8,7 +8,6 @@ body {
     min-width:100vw;
     overflow: hidden;
     user-select: none;
-    -webkit-touch-callout: none;
 }
 
 canvas {
@@ -16,7 +15,6 @@ canvas {
     cursor:crosshair;
     height:100%;
     width:100%;
-    -webkit-touch-callout: none;
 }
 
 .craft {
