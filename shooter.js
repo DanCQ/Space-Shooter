@@ -21,16 +21,17 @@ let mouse = {
 
 //background
 let alpha = 0.8;
-let starArr = []; //object array
 let radians = 0.00020;
 let slow = false;
+let starArr = []; //object array
 
 //game objects
 let enemyArr = []; //enemy object array
 let fireArr = []; //torpedos object array
 
 let angle; //for fire and mouse position
-let inverted = false; //direction of ship
+let fire = ""; //for torpedo objects
+
 let user; //user interactivity
 let userVx; //user velocity x
 let userVy; //user velocity y
@@ -78,11 +79,190 @@ function backgroundDisplay() {
 }
 
 
+//checks collision distance between objects
+function distance(x1,y1,x2,y2) {
+    let xSpace = x2 - x1;
+    let ySpace = y2 - y1;
+
+    return Math.sqrt(Math.pow(xSpace,2) + Math.pow(ySpace,2));
+}
+
+
 //Returns a random number within a chosen range
 function randomRange(min,max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 //Math.floor() rounds down to the nearest whole number  e.i. 10 = 0 - 9  
 //Math.random() returns a random decimal between 0 - 0.99
+}
+
+
+//simulated collision physics 
+function resolveCollision(particle, otherParticle) {
+    const xVelocityDiff = particle.velocity.x - otherParticle.velocity.x;
+    const yVelocityDiff = particle.velocity.y - otherParticle.velocity.y;
+
+    const xDist = otherParticle.x - particle.x;
+    const yDist = otherParticle.y - particle.y;
+    
+    //measures angle & velocity before equation
+    function rotate(velocity, angle) {
+	    const rotatedVelocities = {
+		    x: velocity.x * Math.cos(angle) - velocity.y * Math.sin(angle),
+		    y: velocity.x * Math.sin(angle) + velocity.y * Math.cos(angle)
+	    };
+        return rotatedVelocities;
+    } 
+    
+    // Prevent accidental overlap of particles
+    if (xVelocityDiff * xDist + yVelocityDiff * yDist >= 0) {
+
+        // Grab angle between the two colliding particles
+        const angle = -Math.atan2(otherParticle.y - particle.y, otherParticle.x - particle.x);
+
+        // Store mass in var for better readability in collision equation
+        const m1 = particle.mass;
+        const m2 = otherParticle.mass;
+
+        // Velocity before equation
+        const u1 = rotate(particle.velocity, angle);
+        const u2 = rotate(otherParticle.velocity, angle);
+
+        // Velocity after 1d collision equation
+        const v1 = { x: u1.x * (m1 - m2) / (m1 + m2) + u2.x * 2 * m2 / (m1 + m2), y: u1.y };
+        const v2 = { x: u2.x * (m1 - m2) / (m1 + m2) + u1.x * 2 * m2 / (m1 + m2), y: u2.y };
+
+        // Final velocity after rotating axis back to original location
+        const vFinal1 = rotate(v1, -angle);
+        const vFinal2 = rotate(v2, -angle);
+
+        // Swap particle velocities for realistic bounce effect
+        particle.velocity.x = vFinal1.x * particle.collision;
+        particle.velocity.y = vFinal1.y * particle.collision;
+
+        otherParticle.velocity.x = vFinal2.x * otherParticle.collision;
+        otherParticle.velocity.y = vFinal2.y * otherParticle.collision;
+    }
+}
+
+
+//object blueprint
+class Enemy{
+    constructor (x,y,vx,vy,radius,color) {
+    this.x = x;
+    this.y = y;
+    this.velocity = {
+        x: vx,
+        y: vy
+    };
+    this.color = color;
+    this.radius = radius;
+    this.gravity = 0; 
+    this.frictionY = 0.97 - this.size();
+    this.frictionX = 0.97 - this.size();
+    this.collision = 0.97 - this.size(); //I added to Resolve Collision
+    this.mass = 1 + this.size(); //needed for Resolve collision
+    }
+
+    //takes size into account
+    size() {
+        if(this.radius > 0) {
+            return this.radius / 100;
+        } else {
+            return 0;
+        }
+    }
+       
+    draw() {
+        //circle
+        c.beginPath();
+        c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+        c.strokeStyle = "black";
+        c.lineWidth = 0.7;
+        c.stroke();
+        c.fillStyle = this.color;
+        c.fill();
+        c.closePath();
+    }
+
+    update(enemyArr) {
+
+        //accurate collision detection
+        for(let k = 0; k < enemyArr.length; k++) {
+
+            if(this === enemyArr[k]) continue;
+            if(distance(this.x, this.y, enemyArr[k].x, enemyArr[k].y) - this.radius - enemyArr[k].radius < 0) {
+
+                //activates if combined velocity is above threshold
+                if(this.velocity.y + this.velocity.x + enemyArr[k].velocity.y + enemyArr[k].velocity.x > 1 || 
+                this.velocity.y + this.velocity.x + enemyArr[k].velocity.y + enemyArr[k].velocity.x < -1) {
+
+                    resolveCollision(this, enemyArr[k]);
+                } 
+            }
+        }
+
+        //sets left & right boundaries
+        if(this.x + this.radius + this.velocity.x >= screenWidth || this.x + this.velocity.x <= this.radius) {
+            this.velocity.x = -this.velocity.x * this.frictionX; //reduces side movement on side bounce
+        }
+        //sets ceiling & floor boundaries
+        if(this.y + this.radius + this.velocity.y >= screenHeight || this.y + this.velocity.y <= this.radius) {
+            this.velocity.y = -this.velocity.y * this.frictionY;  //reduces upward movement on floor bounce
+        } else {
+            this.velocity.y += this.gravity; //gravity
+        }
+
+        if(this.y + this.radius <= this.radius * 2 - 5) {   //rapidly unstick from ceiling
+            this.y += 25;
+            this.velocity.x += randomRange(-2,2);  //adds slight sideways movement 
+        } else if(this.y + this.radius <= this.radius * 2) {  //unstick items from ceiling
+            this.y += 1; 
+        }
+        if(this.y + this.radius >= screenHeight + 5) {  //rapidly bring up items from floor
+            this.y -= 25; 
+            this.velocity.x += randomRange(-2,2);  //adds slight sideways movement 
+        } else if(this.y + this.radius >= screenHeight) {  //prevents from sinking into floor
+            this.y -= 1; 
+        }
+
+        if(this.x + this.radius >= screenWidth + 5) {   //rapidly unstick from right
+            this.x -= 25;
+            this.velocity.x += randomRange(-2,2);  //adds slight sideways movement 
+        } else if(this.x + this.radius >= screenWidth) {   //unstick items from right
+            this.x -= 1; 
+        }
+        if(this.x + this.radius <= (this.radius * 2) - 5) {  //rapidly unstick from left
+            this.x += 25;
+            this.velocity.x += randomRange(-2,2);  //adds slight sideways movement 
+        } else if(this.x + this.radius <= this.radius * 2) {    //unstick items from left
+            this.x += 1; 
+        }
+
+        
+        //interactivity; accurate fire & player collision detection
+        for(let m = 0; m < enemyArr.length; m++) {
+
+            if(distance(user.x, user.y, enemyArr[m].x, enemyArr[m].y) - user.radius - enemyArr[m].radius < 0) {
+
+                userVx = (user.x - enemyArr[m].x);  //user x velocity set at impact
+                 
+                userVy = (user.y - enemyArr[m].y); //user y velocity set at impact
+                
+                resolveCollision(user, enemyArr[m]); //collision physics 
+            } 
+
+            if(distance(fire.x, fire.y, enemyArr[m].x, enemyArr[m].y) - enemyArr[m].radius < 0) {
+
+                resolveCollision(fire, enemyArr[m]);
+
+            }
+        }
+
+        this.x += this.velocity.x; 
+        this.y += this.velocity.y;
+        
+        this.draw();
+    }
 }
 
 
@@ -119,26 +299,39 @@ class Player {
         this.y = y;
         this.collision = 1;
         this.mass = 1;
-        this.radius = 85; //radius of mouse object
+        this.radius = 60; //radius of player object
+        this.friction = 0.004;
+        this.lastMouse = {
+            x: x,
+            y: y
+        }; 
         this.velocity = {
             x: 0,
             y: 0
         };
-        this.lastMouse = {
-            x: x,
-            y: y
-        };
     }
 
+/*     //circle
+    draw() {
+        c.beginPath();
+        c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+        c.strokeStyle = "rgba(0,255,255, 0.8)";
+        c.stroke();
+        c.closePath();
+    } */
+
     update() {
-        this.lastMouse.x += (mouse.x - this.lastMouse.x) * 0.004;
-        this.lastMouse.y += (mouse.y - this.lastMouse.y) * 0.004;
+       
+        this.lastMouse.x += (mouse.x - this.lastMouse.x) * this.friction;
+        this.lastMouse.y += (mouse.y - this.lastMouse.y) * this.friction;
         this.x = this.lastMouse.x;
         this.y = this.lastMouse.y;
         this.velocity = {
-            x: userVx,
-            y: userVy
+            x: userVx * 0.4,
+            y: userVy * 0.4
         };
+        
+       // this.draw();        
     };
 }
 
@@ -149,9 +342,13 @@ class Torpedo {
         this.x = x;
         this.y = y;
         this.color = "cyan";
+        this.velocity = {
+            x: 5,
+            y: 5
+        }
         this.target = {
-            x: tx * 4,
-            y: ty * 4
+            x: tx * this.velocity.x,
+            y: ty * this.velocity.y
         };
         this.width = 2.5;
     }
@@ -159,7 +356,7 @@ class Torpedo {
     draw(previous) {
         c.beginPath();
         c.strokeStyle = this.color;
-        c.lineWidth = 2.5;
+        c.lineWidth = this.width;
         c.moveTo(previous.x, previous.y);
         c.lineTo(this.x, this.y);
         c.stroke();
@@ -189,14 +386,36 @@ function creator() {
 
     //background galaxy
     backgroundDisplay();
-
+    
     //player object
     user = new Player(screenWidth / 2, screenHeight / 2);
 
+    //enemy objects
+    for(let i = 0; i < 5; i++) {
+
+        let x, y;
+        let color = colorArray[randomRange(0, colorArray.length - 1)]; //random color picker
+        let vx = randomRange(-5,5); //random velocity x-axis
+        let vy = randomRange(-5,5); //random velocity y-axis
+        let radius = randomRange(5,30); //random circle radius
+
+        //choose random spawn location outside window
+        if(Math.random() < 0.5) {
+            x = Math.random() < 0.5 ? 0 - radius : screenWidth + radius; 
+            y = Math.random() * screenHeight;//choose random location   
+        } else {
+            x = Math.random() * screenWidth; //choose random location
+            y = Math.random() < 0.5 ? 0 - radius : screenHeight + radius; //choose random location   
+        }
+        
+        let alien = new Enemy(x,y,vx,vy,radius,color);
+
+        enemyArr.push(alien); //sends to array
+    }  
 }
 
 
-function animate() {  
+function animate() { 
 
     requestAnimationFrame(animate);
 
@@ -231,24 +450,28 @@ function animate() {
     fireArr.forEach(obj => {
         obj.update();
     });
+    
+    //enemies
+    enemyArr.forEach(obj => {
+        obj.update(enemyArr);
+    });
+
 
     //player object
     user.update();
 
-    
    //spacecraft animations
     let rotation = angle; //cannot alter angle, used in fire position too
     rotation *= 180 / Math.PI; //math formula to correctly follow in a circle
+    
     //makes ship face in mouse direction
     if(mouse.x > user.x + spacecraft.offsetWidth / 2) {
 
         spacecraft.style.transform = `scaleX(-1) scaleY(1) rotate(${-rotation}deg)`;
-        inverted = true;
 
     } else if(mouse.x < user.x - spacecraft.offsetWidth / 2) {
 
         spacecraft.style.transform = `scaleX(-1) scaleY(-1) rotate(${rotation}deg)`;
-        inverted = false;
     }
 
     //positions ship image and updates movement
@@ -260,8 +483,6 @@ function animate() {
 
 canvas.addEventListener("click", function(event) {
 
-    let fire;
- 
     //gets mouse angle from ship. coordinate y first, then x
     angle = Math.atan2(event.y - user.y, event.x - user.x);
 
@@ -270,13 +491,10 @@ canvas.addEventListener("click", function(event) {
         x: Math.cos(angle),
         y: Math.sin(angle)
     }
-    //starts from user location
-    if(inverted) { 
-        fire = new Torpedo(user.x - spacecraft.offsetWidth / 2, user.y, target.x, target.y);
-    } else {
-        fire = new Torpedo(user.x, user.y, target.x, target.y);
-    }
 
+    //starts from user location
+    fire = new Torpedo(user.x, user.y, target.x, target.y);
+    
     fireArr.push(fire);
 });
 
@@ -328,7 +546,6 @@ setTimeout(function() {
             backgroundDisplay(); //redeploy stars
         },100);
     });
-
 }, 25); 
 
 
