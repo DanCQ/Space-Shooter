@@ -14,6 +14,7 @@ canvas {
     background-color: black;
     cursor:crosshair;
     height:100%;
+    position: absolute;
     width:100%;
 }
 
@@ -21,7 +22,6 @@ canvas {
     position:absolute;
     -webkit-touch-callout: none;
 }
-
 
 .portfolio {
     position:absolute;
