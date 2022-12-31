@@ -311,6 +311,7 @@ class Player {
         };
     }
 
+    //not sure if plan to use
 /*     //circle
     draw() {
         c.beginPath();
@@ -391,21 +392,21 @@ function creator() {
     user = new Player(screenWidth / 2, screenHeight / 2);
 
     //enemy objects
-    for(let i = 0; i < 5; i++) {
+    for(let i = 0; i < 10; i++) {
 
         let x, y;
         let color = colorArray[randomRange(0, colorArray.length - 1)]; //random color picker
         let vx = randomRange(-5,5); //random velocity x-axis
         let vy = randomRange(-5,5); //random velocity y-axis
-        let radius = randomRange(5,30); //random circle radius
+        let radius = randomRange(10,25); //random circle radius
 
-        //choose random spawn location outside window
+        //chooses random spawn location outside view window
         if(Math.random() < 0.5) {
             x = Math.random() < 0.5 ? 0 - radius : screenWidth + radius; 
-            y = Math.random() * screenHeight;//choose random location   
+            y = Math.random() * screenHeight;
         } else {
-            x = Math.random() * screenWidth; //choose random location
-            y = Math.random() < 0.5 ? 0 - radius : screenHeight + radius; //choose random location   
+            x = Math.random() * screenWidth;
+            y = Math.random() < 0.5 ? 0 - radius : screenHeight + radius; 
         }
         
         let alien = new Enemy(x,y,vx,vy,radius,color);
@@ -446,19 +447,19 @@ function animate() {
     }
 
 
-    //shots
+    //player projectiles
     fireArr.forEach(obj => {
         obj.update();
     });
     
-    //enemies
+    //enemy objects
     enemyArr.forEach(obj => {
         obj.update(enemyArr);
     });
 
-
     //player object
     user.update();
+
 
    //spacecraft animations
     let rotation = angle; //cannot alter angle, used in fire position too
