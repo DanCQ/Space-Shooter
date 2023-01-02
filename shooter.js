@@ -37,7 +37,8 @@ let starArr = []; //object array
 //game objects
 let enemyArr = []; //enemy object array
 let fireArr = []; //torpedos object array
-let num = randomRange(1, 6);
+let count = 0;
+let enemyInt;
 
 let angle; //for fire and mouse position
 let fire = ""; //for torpedo objects
@@ -436,27 +437,36 @@ function creator() {
     user = new Player(screenWidth / 2, screenHeight / 2);
 
     //enemy objects
-    for(let i = 0; i < num; i++) {
+    enemyInt = setInterval(function() {
+            
+        if(count < aliens.length) { 
 
-        let x, y;
-        let color = colorArray[randomRange(0, colorArray.length - 1)]; //random color picker
-        let vx = randomRange(-5,5); //random velocity x-axis
-        let vy = randomRange(-5,5); //random velocity y-axis
-        let radius = 50;
-
-        //chooses random spawn location outside view window
-        if(Math.random() < 0.5) {
-            x = Math.random() < 0.5 ? 0 - radius : screenWidth + radius; 
-            y = Math.random() * screenHeight;
+            let x, y;
+            let color = colorArray[randomRange(0, colorArray.length - 1)]; //random color picker
+            let vx = randomRange(-25,25); //random velocity x-axis
+            let vy = randomRange(-25,25); //random velocity y-axis
+            let radius = 50;
+            
+            //chooses random spawn location outside view window
+            if(Math.random() < 0.5) {
+                x = Math.random() < 0.5 ? 0 - radius : screenWidth + radius; 
+                y = Math.random() * screenHeight;
+            } else {
+                x = Math.random() * screenWidth;
+                y = Math.random() < 0.5 ? 0 - radius : screenHeight + radius; 
+            }
+                    
+            let alien = new Enemy(x,y,vx,vy,radius,color);
+            
+            enemyArr.push(alien); //sends to array
+            count++;    
+            
         } else {
-            x = Math.random() * screenWidth;
-            y = Math.random() < 0.5 ? 0 - radius : screenHeight + radius; 
+            clearInterval(enemyInt);
         }
-        
-        let alien = new Enemy(x,y,vx,vy,radius,color);
 
-        enemyArr.push(alien); //sends to array
-    }  
+    }, 10000);
+
 }
 
 
