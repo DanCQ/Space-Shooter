@@ -3,7 +3,7 @@ A space shooting game.
 
 --UNder CONstrUctION--
 
-Working on fire detection. Will add enemy images.
+Working on fire detection. Enemy directional positioning.
 
 <a href="https://space-shooter.pages.dev/">Space Shooter</a>
 
