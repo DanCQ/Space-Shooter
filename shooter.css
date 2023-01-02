@@ -1,3 +1,25 @@
+#alien2 {
+    transform: rotate(10deg);
+}
+
+#alien4 {
+    transform: rotate(32deg);
+}
+
+#alien5 {
+    transform: rotate(-4deg);
+}
+
+#alien6 {
+    transform: rotate(38deg);
+}
+
+.alien img {
+    height:150px;
+    position: absolute;
+    visibility: hidden;
+}
+
 body {
     background-color: black;
     display:flex;
