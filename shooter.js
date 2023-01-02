@@ -37,12 +37,12 @@ let starArr = []; //object array
 //game objects
 let enemyArr = []; //enemy object array
 let fireArr = []; //torpedos object array
-let count = 0;
-let enemyInt;
+let count = 0; //for enemy deployment
+let enemyInt; //for enemy deployment
 
 let angle; //for fire and mouse position
 let fire = ""; //for torpedo objects
-let target;
+let target; //for fire direction
 
 let user; //user interactivity
 let userVx; //user velocity x
@@ -71,92 +71,6 @@ const colorArray = [
 ];
 
 
-//used for screen resizing
-function backgroundDisplay() {
-
-    starArr = [];
-
-    //background galaxy 
-    for(let i = 0; i < 500; i++) {
-        //makes up for offset of screen in rotation animation
-        let x = randomRange(-screenWidth, screenWidth); 
-        let y = randomRange(-screenHeight, screenHeight);
-        let color = colorArray[randomRange(0, colorArray.length - 1)];
-        let radius = randomRange(0.6, 1);
-            
-        let star = new Galaxy(x, y, radius, color);
-            
-        starArr.push(star);
-    }  
-}
-
-
-//checks collision distance between objects
-function distance(x1,y1,x2,y2) {
-    let xSpace = x2 - x1;
-    let ySpace = y2 - y1;
-
-    return Math.sqrt(Math.pow(xSpace,2) + Math.pow(ySpace,2));
-}
-
-
-//Returns a random number within a chosen range
-function randomRange(min,max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-//Math.floor() rounds down to the nearest whole number  e.i. 10 = 0 - 9  
-//Math.random() returns a random decimal between 0 - 0.99
-}
-
-
-//simulated collision physics 
-function resolveCollision(particle, otherParticle) {
-    const xVelocityDiff = particle.velocity.x - otherParticle.velocity.x;
-    const yVelocityDiff = particle.velocity.y - otherParticle.velocity.y;
-
-    const xDist = otherParticle.x - particle.x;
-    const yDist = otherParticle.y - particle.y;
-    
-    //measures angle & velocity before equation
-    function rotate(velocity, angle) {
-	    const rotatedVelocities = {
-		    x: velocity.x * Math.cos(angle) - velocity.y * Math.sin(angle),
-		    y: velocity.x * Math.sin(angle) + velocity.y * Math.cos(angle)
-	    };
-        return rotatedVelocities;
-    } 
-    
-    // Prevent accidental overlap of particles
-    if (xVelocityDiff * xDist + yVelocityDiff * yDist >= 0) {
-
-        // Grab angle between the two colliding particles
-        const angle = -Math.atan2(otherParticle.y - particle.y, otherParticle.x - particle.x);
-
-        // Store mass in var for better readability in collision equation
-        const m1 = particle.mass;
-        const m2 = otherParticle.mass;
-
-        // Velocity before equation
-        const u1 = rotate(particle.velocity, angle);
-        const u2 = rotate(otherParticle.velocity, angle);
-
-        // Velocity after 1d collision equation
-        const v1 = { x: u1.x * (m1 - m2) / (m1 + m2) + u2.x * 2 * m2 / (m1 + m2), y: u1.y };
-        const v2 = { x: u2.x * (m1 - m2) / (m1 + m2) + u1.x * 2 * m2 / (m1 + m2), y: u2.y };
-
-        // Final velocity after rotating axis back to original location
-        const vFinal1 = rotate(v1, -angle);
-        const vFinal2 = rotate(v2, -angle);
-
-        // Swap particle velocities for realistic bounce effect
-        particle.velocity.x = vFinal1.x * particle.collision;
-        particle.velocity.y = vFinal1.y * particle.collision;
-
-        otherParticle.velocity.x = vFinal2.x * otherParticle.collision;
-        otherParticle.velocity.y = vFinal2.y * otherParticle.collision;
-    }
-}
-
-
 //object blueprint
 class Enemy{
     constructor (x,y,vx,vy,radius,color) {
@@ -171,7 +85,7 @@ class Enemy{
     this.gravity = 0; 
     this.frictionY = 0.97 - this.size();
     this.frictionX = 0.97 - this.size();
-    this.collision = 0.97 - this.size(); //I added to Resolve Collision
+    this.collision = 0.97 - this.size(); //added to Resolve Collision
     this.mass = 1 + this.size(); //needed for Resolve collision
     }
 
@@ -184,7 +98,7 @@ class Enemy{
         }
     }
        
-   /*  draw() {
+  /*   draw() {
         //circle
         c.beginPath();
         c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
@@ -261,11 +175,11 @@ class Enemy{
                 resolveCollision(user, enemyArr[m]); //collision physics 
             } 
 
-            if(distance(fire.x, fire.y, enemyArr[m].x, enemyArr[m].y) - enemyArr[m].radius < 0) {
+           /*  if(distance(fire.x, fire.y, enemyArr[m].x, enemyArr[m].y) - enemyArr[m].radius < 0) {
 
                 resolveCollision(fire, enemyArr[m]);
 
-            }
+            } */
         }
 
         this.x += this.velocity.x; 
@@ -280,6 +194,7 @@ class Enemy{
             aliens[i].style.top = `${-screenHeight / 2 - (aliens[i].offsetHeight / 2) + enemyArr[i].y}px`;
 
 
+            //targeting enemies
             aliens[i].addEventListener("click", function(event) {
                 //gets mouse angle from ship. coordinate y first, then x
                 angle = Math.atan2(event.y - user.y, event.x - user.x);
@@ -288,7 +203,7 @@ class Enemy{
                 target = {
                     x: Math.cos(angle),
                     y: Math.sin(angle)
-                    }
+                }
     
                 //starts from user location
                 fire = new Torpedo(user.x, user.y, target.x, target.y);
@@ -299,7 +214,7 @@ class Enemy{
         } 
 
     
-       // this.draw();
+       //this.draw();
     }
 }
 
@@ -428,48 +343,6 @@ class Torpedo {
 }
 
 
-function creator() {
-
-    //background galaxy
-    backgroundDisplay();
-    
-    //player object
-    user = new Player(screenWidth / 2, screenHeight / 2);
-
-    //enemy objects
-    enemyInt = setInterval(function() {
-            
-        if(count < aliens.length) { 
-
-            let x, y;
-            let color = colorArray[randomRange(0, colorArray.length - 1)]; //random color picker
-            let vx = randomRange(-25,25); //random velocity x-axis
-            let vy = randomRange(-25,25); //random velocity y-axis
-            let radius = 50;
-            
-            //chooses random spawn location outside view window
-            if(Math.random() < 0.5) {
-                x = Math.random() < 0.5 ? 0 - radius : screenWidth + radius; 
-                y = Math.random() * screenHeight;
-            } else {
-                x = Math.random() * screenWidth;
-                y = Math.random() < 0.5 ? 0 - radius : screenHeight + radius; 
-            }
-                    
-            let alien = new Enemy(x,y,vx,vy,radius,color);
-            
-            enemyArr.push(alien); //sends to array
-            count++;    
-            
-        } else {
-            clearInterval(enemyInt);
-        }
-
-    }, 10000);
-
-}
-
-
 function animate() { 
 
     requestAnimationFrame(animate);
@@ -515,6 +388,135 @@ function animate() {
     //player object
     user.update();
 
+}
+
+
+//used for screen resizing
+function backgroundDisplay() {
+
+    starArr = [];
+
+    //background galaxy 
+    for(let i = 0; i < 500; i++) {
+
+        //makes up for offset of screen in rotation animation
+        let x = randomRange(-screenWidth, screenWidth); 
+        let y = randomRange(-screenHeight, screenHeight);
+        let color = colorArray[randomRange(0, colorArray.length - 1)];
+        let radius = randomRange(0.6, 1);
+            
+        let star = new Galaxy(x, y, radius, color);
+            
+        starArr.push(star);
+    }  
+}
+
+
+function creator() {
+
+    //background galaxy
+    backgroundDisplay();
+    
+    //player object
+    user = new Player(screenWidth / 2, screenHeight / 2);
+
+    //enemy objects
+    enemyInt = setInterval(function() {
+            
+        if(count < aliens.length) { 
+
+            let x, y;
+            let color = colorArray[randomRange(0, colorArray.length - 1)]; //random color picker
+            let vx = randomRange(-25,25); //random velocity x-axis
+            let vy = randomRange(-25,25); //random velocity y-axis
+            let radius = alien1.offsetHeight / 2;
+            
+            //chooses random spawn location outside view window
+            if(Math.random() < 0.5) {
+                x = Math.random() < 0.5 ? 0 - radius : screenWidth + radius; 
+                y = Math.random() * screenHeight;
+            } else {
+                x = Math.random() * screenWidth;
+                y = Math.random() < 0.5 ? 0 - radius : screenHeight + radius; 
+            }
+                    
+            let alien = new Enemy(x,y,vx,vy,radius,color);
+            
+            enemyArr.push(alien); //sends to array
+            count++;    
+            
+        } else {
+            clearInterval(enemyInt);
+        }
+
+    }, 10000 + randomRange(-8000,8000));
+
+}
+
+
+//checks collision distance between objects
+function distance(x1,y1,x2,y2) {
+    let xSpace = x2 - x1;
+    let ySpace = y2 - y1;
+
+    return Math.sqrt(Math.pow(xSpace,2) + Math.pow(ySpace,2));
+}
+
+
+//Returns a random number within a chosen range
+function randomRange(min,max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+//Math.floor() rounds down to the nearest whole number  e.i. 10 = 0 - 9  
+//Math.random() returns a random decimal between 0 - 0.99
+}
+
+
+//simulated collision physics 
+function resolveCollision(particle, otherParticle) {
+    const xVelocityDiff = particle.velocity.x - otherParticle.velocity.x;
+    const yVelocityDiff = particle.velocity.y - otherParticle.velocity.y;
+
+    const xDist = otherParticle.x - particle.x;
+    const yDist = otherParticle.y - particle.y;
+    
+    //measures angle & velocity before equation
+    function rotate(velocity, angle) {
+	    const rotatedVelocities = {
+		    x: velocity.x * Math.cos(angle) - velocity.y * Math.sin(angle),
+		    y: velocity.x * Math.sin(angle) + velocity.y * Math.cos(angle)
+	    };
+        return rotatedVelocities;
+    } 
+    
+    // Prevent accidental overlap of particles
+    if (xVelocityDiff * xDist + yVelocityDiff * yDist >= 0) {
+
+        // Grab angle between the two colliding particles
+        const angle = -Math.atan2(otherParticle.y - particle.y, otherParticle.x - particle.x);
+
+        // Store mass in var for better readability in collision equation
+        const m1 = particle.mass;
+        const m2 = otherParticle.mass;
+
+        // Velocity before equation
+        const u1 = rotate(particle.velocity, angle);
+        const u2 = rotate(otherParticle.velocity, angle);
+
+        // Velocity after 1d collision equation
+        const v1 = { x: u1.x * (m1 - m2) / (m1 + m2) + u2.x * 2 * m2 / (m1 + m2), y: u1.y };
+        const v2 = { x: u2.x * (m1 - m2) / (m1 + m2) + u1.x * 2 * m2 / (m1 + m2), y: u2.y };
+
+        // Final velocity after rotating axis back to original location
+        const vFinal1 = rotate(v1, -angle);
+        const vFinal2 = rotate(v2, -angle);
+
+        // Swap particle velocities for realistic bounce effect
+        particle.velocity.x = vFinal1.x * particle.collision;
+        particle.velocity.y = vFinal1.y * particle.collision;
+
+        otherParticle.velocity.x = vFinal2.x * otherParticle.collision;
+        otherParticle.velocity.y = vFinal2.y * otherParticle.collision;
+    }
 }
 
 
