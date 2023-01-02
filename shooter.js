@@ -2,6 +2,15 @@ const canvas = document.getElementById("canvas");
 const portfolio = document.querySelector(".portfolio");
 const spacecraft = document.getElementById("spacecraft"); //player
 
+const alien1 = document.getElementById("alien1");
+const alien2 = document.getElementById("alien2");
+const alien3 = document.getElementById("alien3");
+const alien4 = document.getElementById("alien4");
+const alien5 = document.getElementById("alien5");
+const alien6 = document.getElementById("alien6");
+
+let aliens = [alien1, alien2, alien3, alien4, alien5, alien6];
+
 let screenHeight = window.innerHeight;
 let screenWidth = window.innerWidth;
 canvas.height = screenHeight;
@@ -28,9 +37,11 @@ let starArr = []; //object array
 //game objects
 let enemyArr = []; //enemy object array
 let fireArr = []; //torpedos object array
+let num = randomRange(1, 6);
 
 let angle; //for fire and mouse position
 let fire = ""; //for torpedo objects
+let target;
 
 let user; //user interactivity
 let userVx; //user velocity x
@@ -172,17 +183,15 @@ class Enemy{
         }
     }
        
-    draw() {
+   /*  draw() {
         //circle
         c.beginPath();
         c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+        c.strokeStyle = this.color;
         c.lineWidth = 0.7;
-        c.fillStyle = this.color;
-        c.fill();
-        c.strokeStyle = "black";
         c.stroke();
         c.closePath();
-    }
+    } */
 
     update(enemyArr) {
 
@@ -260,8 +269,36 @@ class Enemy{
 
         this.x += this.velocity.x; 
         this.y += this.velocity.y;
+
+
+        //positions enemies and updates movement
+        for(let i = 0; i < enemyArr.length; i ++) {
+            
+            aliens[i].style.visibility = "visible";
+            aliens[i].style.left = `${-screenWidth / 2 - (aliens[i].offsetWidth / 2) + enemyArr[i].x}px`;
+            aliens[i].style.top = `${-screenHeight / 2 - (aliens[i].offsetHeight / 2) + enemyArr[i].y}px`;
+
+
+            aliens[i].addEventListener("click", function(event) {
+                //gets mouse angle from ship. coordinate y first, then x
+                angle = Math.atan2(event.y - user.y, event.x - user.x);
+    
+                //sends fire at this angle
+                target = {
+                    x: Math.cos(angle),
+                    y: Math.sin(angle)
+                    }
+    
+                //starts from user location
+                fire = new Torpedo(user.x, user.y, target.x, target.y);
         
-        this.draw();
+                fireArr.push(fire);
+
+            });
+        } 
+
+    
+       // this.draw();
     }
 }
 
@@ -311,16 +348,6 @@ class Player {
         };
     }
 
-    //not sure if plan to use
-/*     //circle
-    draw() {
-        c.beginPath();
-        c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-        c.strokeStyle = "rgba(0,255,255, 0.8)";
-        c.stroke();
-        c.closePath();
-    } */
-
     update() {
        
         this.lastMouse.x += (mouse.x - this.lastMouse.x) * this.friction;
@@ -331,8 +358,25 @@ class Player {
             x: userVx * 0.4,
             y: userVy * 0.4
         };
-        
-       // this.draw();        
+
+
+        //spacecraft animations
+        let rotation = angle; //cannot alter angle, used in fire position too
+        rotation *= 180 / Math.PI; //math formula to correctly follow in a circle
+    
+        //makes ship face in mouse direction
+        if(mouse.x > user.x + spacecraft.offsetWidth / 2) {
+
+            spacecraft.style.transform = `scaleX(-1) scaleY(1) rotate(${-rotation}deg)`;
+
+        } else if(mouse.x < user.x - spacecraft.offsetWidth / 2) {
+
+            spacecraft.style.transform = `scaleX(-1) scaleY(-1) rotate(${rotation}deg)`;
+        }
+
+        //positions ship image and updates movement
+        spacecraft.style.left = `${-screenWidth / 2 - (spacecraft.offsetWidth / 2) + user.x}px`;
+        spacecraft.style.top = `${-screenHeight / 2 - (spacecraft.offsetHeight / 2) + user.y}px`;
     };
 }
 
@@ -392,13 +436,13 @@ function creator() {
     user = new Player(screenWidth / 2, screenHeight / 2);
 
     //enemy objects
-    for(let i = 0; i < 10; i++) {
+    for(let i = 0; i < num; i++) {
 
         let x, y;
         let color = colorArray[randomRange(0, colorArray.length - 1)]; //random color picker
         let vx = randomRange(-5,5); //random velocity x-axis
         let vy = randomRange(-5,5); //random velocity y-axis
-        let radius = randomRange(10,25); //random circle radius
+        let radius = 50;
 
         //chooses random spawn location outside view window
         if(Math.random() < 0.5) {
@@ -452,32 +496,14 @@ function animate() {
         obj.update();
     });
     
-    //enemy objects
+    
     enemyArr.forEach(obj => {
         obj.update(enemyArr);
     });
 
+
     //player object
     user.update();
-
-
-   //spacecraft animations
-    let rotation = angle; //cannot alter angle, used in fire position too
-    rotation *= 180 / Math.PI; //math formula to correctly follow in a circle
-    
-    //makes ship face in mouse direction
-    if(mouse.x > user.x + spacecraft.offsetWidth / 2) {
-
-        spacecraft.style.transform = `scaleX(-1) scaleY(1) rotate(${-rotation}deg)`;
-
-    } else if(mouse.x < user.x - spacecraft.offsetWidth / 2) {
-
-        spacecraft.style.transform = `scaleX(-1) scaleY(-1) rotate(${rotation}deg)`;
-    }
-
-    //positions ship image and updates movement
-    spacecraft.style.left = `${-screenWidth / 2 - (spacecraft.offsetWidth / 2) + user.x}px`;
-    spacecraft.style.top = `${-screenHeight / 2 - (spacecraft.offsetHeight / 2) + user.y}px`;
 
 }
 
@@ -488,7 +514,7 @@ canvas.addEventListener("click", function(event) {
     angle = Math.atan2(event.y - user.y, event.x - user.x);
 
     //sends fire at this angle
-    let target = {
+    target = {
         x: Math.cos(angle),
         y: Math.sin(angle)
     }
