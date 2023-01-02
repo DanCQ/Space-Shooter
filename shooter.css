@@ -65,6 +65,10 @@ canvas {
 
 @media (max-width: 1200px) {
 
+    .alien img {
+        height:140px;
+    }
+
     #spacecraft {
         width:85px;
     }
@@ -72,6 +76,10 @@ canvas {
 }
 
 @media (max-width: 1000px) {
+
+    .alien img {
+        height:130px;
+    }
 
     #spacecraft {
         width:80px;
@@ -81,6 +89,10 @@ canvas {
 
 @media (max-width: 800px) {
 
+    .alien img {
+        height:120px;
+    }
+
     #spacecraft {
         width:75px;
     }
@@ -89,6 +101,10 @@ canvas {
 
 @media (max-width: 600px) {
 
+    .alien img {
+        height:110px;
+    }
+
     #spacecraft {
         width:70px;
     }
@@ -96,6 +112,10 @@ canvas {
 }
 
 @media (max-width: 400px) {
+
+    .alien img {
+        height:100px;
+    }
 
     #spacecraft {
         width:65px;
