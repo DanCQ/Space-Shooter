@@ -533,7 +533,7 @@ function resolveCollision(particle, otherParticle) {
 }
 
 
-canvas.addEventListener("click", function(event) {
+addEventListener("click", function(event) {
 
     //gets mouse angle from ship. coordinate y first, then x
     angle = Math.atan2(event.y - user.y, event.x - user.x);
