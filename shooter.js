@@ -532,24 +532,6 @@ function resolveCollision(particle, otherParticle) {
     }
 }
 
-aliens.forEach(obj => {
-   obj.addEventListener("click", function(event) {
-
-    //gets mouse angle from ship. coordinate y first, then x
-    angle = Math.atan2(event.y - user.y, event.x - user.x);
-
-    //sends fire at this angle
-    target = {
-        x: Math.cos(angle),
-        y: Math.sin(angle)
-    }
-
-    //starts from user location
-    fire = new Torpedo(user.x, user.y, target.x, target.y);
-    
-    fireArr.push(fire);
-});
-
 
 addEventListener("click", function(event) {
 
