@@ -162,6 +162,24 @@ class Enemy{
             aliens[i].style.top = `${-screenHeight / 2 - (aliens[i].offsetHeight / 2) + enemyArr[i].y}px`;
 
 
+aliens[i].addEventListener("click", function(event) {
+
+    //gets mouse angle from ship. coordinate y first, then x
+    angle = Math.atan2(event.y - user.y, event.x - user.x);
+
+    //sends fire at this angle
+    target = {
+        x: Math.cos(angle),
+        y: Math.sin(angle)
+    }
+
+    //starts from user location
+    fire = new Torpedo(user.x, user.y, target.x, target.y);
+    
+    fireArr.push(fire);
+});
+
+
             //accurate collision detection among enemies
             if(this === enemyArr[i]) continue;
             if(distance(this.x, this.y, enemyArr[i].x, enemyArr[i].y) - this.radius - enemyArr[i].radius < 0) {
