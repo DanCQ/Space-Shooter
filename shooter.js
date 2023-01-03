@@ -42,6 +42,8 @@ let enemyInt; //for enemy deployment
 
 let angle; //for fire and mouse position
 let fire = ""; //for torpedo objects
+let fireVx = 1;
+let fireVy = 1;
 let target; //for fire direction
 
 let user; //user interactivity
@@ -81,6 +83,8 @@ class Enemy{
         y: vy
     };
     this.color = color;
+    this.hit = 0;
+    this.shot = false;
     this.radius = radius;
     this.gravity = 0; 
     this.frictionY = 0.97 - this.size();
@@ -98,7 +102,7 @@ class Enemy{
         }
     }
        
-  /*   draw() {
+ /*    draw() {
         //circle
         c.beginPath();
         c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
@@ -109,21 +113,6 @@ class Enemy{
     } */
 
     update(enemyArr) {
-
-        //accurate collision detection
-        for(let k = 0; k < enemyArr.length; k++) {
-
-            if(this === enemyArr[k]) continue;
-            if(distance(this.x, this.y, enemyArr[k].x, enemyArr[k].y) - this.radius - enemyArr[k].radius < 0) {
-
-                //activates if combined velocity is above threshold
-                if(this.velocity.y + this.velocity.x + enemyArr[k].velocity.y + enemyArr[k].velocity.x > 1 || 
-                this.velocity.y + this.velocity.x + enemyArr[k].velocity.y + enemyArr[k].velocity.x < -1) {
-
-                    resolveCollision(this, enemyArr[k]);
-                } 
-            }
-        }
 
         //sets left & right boundaries
         if(this.x + this.radius + this.velocity.x >= screenWidth || this.x + this.velocity.x <= this.radius) {
@@ -162,55 +151,64 @@ class Enemy{
             this.x += 1; 
         }
 
-        
-        //interactivity; accurate fire & player collision detection
-        for(let m = 0; m < enemyArr.length; m++) {
-
-            if(distance(user.x, user.y, enemyArr[m].x, enemyArr[m].y) - user.radius - enemyArr[m].radius < 0) {
-
-                userVx = (user.x - enemyArr[m].x);  //user x velocity set at impact
-                 
-                userVy = (user.y - enemyArr[m].y); //user y velocity set at impact
-                
-                resolveCollision(user, enemyArr[m]); //collision physics 
-            } 
-
-           /*  if(distance(fire.x, fire.y, enemyArr[m].x, enemyArr[m].y) - enemyArr[m].radius < 0) {
-
-                resolveCollision(fire, enemyArr[m]);
-
-            } */
-        }
 
         this.x += this.velocity.x; 
         this.y += this.velocity.y;
 
-
-        //positions enemies and updates movement
-        for(let i = 0; i < enemyArr.length; i ++) {
+                
+        for(let i = 0; i < enemyArr.length; i++) {
             
-            aliens[i].style.visibility = "visible";
             aliens[i].style.left = `${-screenWidth / 2 - (aliens[i].offsetWidth / 2) + enemyArr[i].x}px`;
             aliens[i].style.top = `${-screenHeight / 2 - (aliens[i].offsetHeight / 2) + enemyArr[i].y}px`;
 
 
-            //targeting enemies
-            aliens[i].addEventListener("click", function(event) {
-                //gets mouse angle from ship. coordinate y first, then x
-                angle = Math.atan2(event.y - user.y, event.x - user.x);
-    
-                //sends fire at this angle
-                target = {
-                    x: Math.cos(angle),
-                    y: Math.sin(angle)
-                }
-    
-                //starts from user location
-                fire = new Torpedo(user.x, user.y, target.x, target.y);
-        
-                fireArr.push(fire);
+            //accurate collision detection among enemies
+            if(this === enemyArr[i]) continue;
+            if(distance(this.x, this.y, enemyArr[i].x, enemyArr[i].y) - this.radius - enemyArr[i].radius < 0) {
 
-            });
+                //activates if combined velocity is above threshold
+                if(this.velocity.y + this.velocity.x + enemyArr[i].velocity.y + enemyArr[i].velocity.x > 0.5 || 
+                this.velocity.y + this.velocity.x + enemyArr[i].velocity.y + enemyArr[i].velocity.x < -0.5) {
+
+                    resolveCollision(this, enemyArr[i]);
+                } 
+            }
+
+            //collision detection among user and enemies
+            if(distance(user.x, user.y, enemyArr[i].x, enemyArr[i].y) - user.radius - enemyArr[i].radius < 0) {
+
+                userVx = (user.x - enemyArr[i].x);  //user x velocity set at impact
+                 
+                userVy = (user.y - enemyArr[i].y); //user y velocity set at impact
+                
+                resolveCollision(user, enemyArr[i]); //collision physics 
+            } 
+     
+    
+            ////fire detection on enemies
+            if(distance(fire.x, fire.y, enemyArr[i].x, enemyArr[i].y) - enemyArr[i].radius < 0) {
+
+                fireVx = (fire.x - enemyArr[i].x);  //user x velocity set at impact
+                 
+                fireVy = (fire.y - enemyArr[i].y); //user y velocity set at impact
+
+                resolveCollision(fire, enemyArr[i]);
+            }
+
+            if(enemyArr[i].shot) { 
+                    
+                enemyArr[i].hit++;
+
+                setTimeout(function() {
+                    enemyArr[i].shot = false;
+                }, 1);
+
+            } 
+
+            if(enemyArr[i].hit > 400) {
+                aliens[i].style.visibility = "hidden";
+            }
+
         } 
 
     
@@ -253,7 +251,7 @@ class Player {
         this.collision = 1;
         this.mass = 1;
         this.radius = 60; //radius of player object
-        this.friction = 0.004;
+        this.friction = 0.005;
         this.lastMouse = {
             x: x,
             y: y
@@ -303,21 +301,23 @@ class Torpedo {
         this.x = x;
         this.y = y;
         this.color = "cyan";
+        this.collision = 50;
+        this.mass = 50;
+        this.radius = 0.5;
         this.velocity = {
             x: 5,
-            y: 5
-        }
+            y: 5 
+        };
         this.target = {
             x: tx * this.velocity.x,
             y: ty * this.velocity.y
         };
-        this.width = 2.5;
     }
 
     draw(previous) {
         c.beginPath();
         c.strokeStyle = this.color;
-        c.lineWidth = this.width;
+        c.lineWidth = 2.5;
         c.moveTo(previous.x, previous.y);
         c.lineTo(this.x, this.y);
         c.stroke();
@@ -328,12 +328,26 @@ class Torpedo {
         let previous = {
             x: this.x - this.target.x,
             y: this.y - this.target.y
-        }
-       
+        };
+
+        this.velocity = {
+            x: 5 + fireVx,
+            y: 5 + fireVy
+        };
+
         //prevents slowdown by deleting offscreen projectiles
         if(this.x > screenWidth || this.x < 0 || this.y > screenHeight || this.y < 0) {
             fireArr.splice(this, 1);
         }
+
+        //fire detection
+        enemyArr.forEach(obj => {
+
+            if(distance(this.x, this.y, obj.x, obj.y) - obj.radius < 0) {
+
+                fireArr.splice(this, 1);
+            }
+        });
 
         this.x += this.target.x;
         this.y += this.target.y;
@@ -379,11 +393,9 @@ function animate() {
         obj.update();
     });
     
-    
     enemyArr.forEach(obj => {
         obj.update(enemyArr);
     });
-
 
     //player object
     user.update();
@@ -443,8 +455,9 @@ function creator() {
             let alien = new Enemy(x,y,vx,vy,radius,color);
             
             enemyArr.push(alien); //sends to array
-            count++;    
-            
+            aliens[count].style.visibility = "visible";
+            count++;   
+             
         } else {
             clearInterval(enemyInt);
         }
@@ -520,7 +533,7 @@ function resolveCollision(particle, otherParticle) {
 }
 
 
-canvas.addEventListener("click", function(event) {
+window.addEventListener("click", function(event) {
 
     //gets mouse angle from ship. coordinate y first, then x
     angle = Math.atan2(event.y - user.y, event.x - user.x);
@@ -538,7 +551,7 @@ canvas.addEventListener("click", function(event) {
 });
 
 
-canvas.addEventListener("mousemove", function(event) {
+window.addEventListener("mousemove", function(event) {
     
     //gets mouse angle from ship
     angle = Math.atan2(event.y - user.y, event.x - user.x);
