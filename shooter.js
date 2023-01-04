@@ -553,16 +553,17 @@ function resolveCollision(particle, otherParticle) {
 }
 
 
-aliens.forEach(obj => {
+/* 
+    aliens.forEach(obj => {
 
-    obj.addEventListener("touchstart", function(event) {
+        obj.addEventListener("click", function(event) {
 
-        fireLock(event);
-    });
-});
+            fireLock(event);
+        });
+    }); */
 
 
-window.addEventListener("click", function(event) {
+document.body.addEventListener("click", function(event) {
 
     fireLock(event);  
 });
