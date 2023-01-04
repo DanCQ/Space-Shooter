@@ -43,7 +43,6 @@ canvas {
 
 .craft {
     position:absolute;
-    user-zoom:fixed;
     -webkit-touch-callout: none;
 }
 
