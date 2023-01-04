@@ -17,6 +17,7 @@
 .alien img { 
     height:150px;
     position: absolute;
+    touch-action: manipulation;
     visibility: hidden;
 }
 
