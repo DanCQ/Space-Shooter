@@ -374,7 +374,7 @@ function animate() {
     });
     c.restore();
 
-    radians += 0.00020;
+    radians += 0.00022;
 
     if(slow) {
         if(alpha > 0.001) {
@@ -554,7 +554,7 @@ function resolveCollision(particle, otherParticle) {
 
 document.body.addEventListener("click", function(event) {
 
-   // event.preventDefault();
+    event.preventDefault();
     fireLock(event);  
 });
 
