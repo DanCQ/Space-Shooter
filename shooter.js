@@ -35,10 +35,10 @@ let slow = false;
 let starArr = []; //object array
 
 //game objects
-let enemyArr = []; //enemy object array
-let fireArr = []; //torpedos object array
 let count = 0; //for enemy deployment
+let enemyArr = []; //enemy object array
 let enemyInt; //for enemy deployment
+let fireArr = []; //torpedos object array
 
 let angle; //for fire and mouse position
 let fire = ""; //for torpedo objects
@@ -162,22 +162,10 @@ class Enemy{
             aliens[i].style.top = `${-screenHeight / 2 - (aliens[i].offsetHeight / 2) + enemyArr[i].y}px`;
 
 
-aliens[i].addEventListener("click", function(event) {
+            aliens[i].addEventListener("click", function(event) {
 
-    //gets mouse angle from ship. coordinate y first, then x
-    angle = Math.atan2(event.y - user.y, event.x - user.x);
-
-    //sends fire at this angle
-    target = {
-        x: Math.cos(angle),
-        y: Math.sin(angle)
-    }
-
-    //starts from user location
-    fire = new Torpedo(user.x, user.y, target.x, target.y);
-    
-    fireArr.push(fire);
-});
+                fireLock(event);
+            });
 
 
             //accurate collision detection among enemies
@@ -229,7 +217,6 @@ aliens[i].addEventListener("click", function(event) {
 
         } 
 
-    
        //this.draw();
     }
 }
@@ -319,9 +306,9 @@ class Torpedo {
         this.x = x;
         this.y = y;
         this.color = "cyan";
-        this.collision = 50;
-        this.mass = 50;
-        this.radius = 0.5;
+        this.collision = 10;
+        this.mass = 10;
+        this.radius = 1;
         this.velocity = {
             x: 5,
             y: 5 
@@ -494,6 +481,23 @@ function distance(x1,y1,x2,y2) {
 }
 
 
+function fireLock(event) {
+    //gets mouse angle from ship. coordinate y first, then x
+    angle = Math.atan2(event.y - user.y, event.x - user.x);
+            
+    //sends fire at this angle
+    target = {
+        x: Math.cos(angle),
+        y: Math.sin(angle)
+    }
+
+    //starts from user location
+    fire = new Torpedo(user.x, user.y, target.x, target.y);
+
+    fireArr.push(fire);
+}
+
+
 //Returns a random number within a chosen range
 function randomRange(min,max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -551,21 +555,9 @@ function resolveCollision(particle, otherParticle) {
 }
 
 
-addEventListener("click", function(event) {
+window.addEventListener("click", function(event) {
 
-    //gets mouse angle from ship. coordinate y first, then x
-    angle = Math.atan2(event.y - user.y, event.x - user.x);
-
-    //sends fire at this angle
-    target = {
-        x: Math.cos(angle),
-        y: Math.sin(angle)
-    }
-
-    //starts from user location
-    fire = new Torpedo(user.x, user.y, target.x, target.y);
-    
-    fireArr.push(fire);
+    fireLock(event);
 });
 
 
