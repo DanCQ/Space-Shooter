@@ -15,7 +15,6 @@
 }
 
 .alien img { 
-    cursor:crosshair;
     height:150px;
     position: absolute;
     visibility: hidden;
@@ -23,6 +22,7 @@
 
 body {
     background-color: black;
+    cursor:crosshair;
     display:flex;
         align-items: center;
         justify-content: center;
@@ -31,11 +31,11 @@ body {
     min-width:100vw;
     overflow: hidden;
     user-select: none;
+    user-zoom:fixed;
 }
 
 canvas {
     background-color: black;
-    cursor:crosshair;
     height:100%;
     position: absolute;
     width:100%;
@@ -43,6 +43,7 @@ canvas {
 
 .craft {
     position:absolute;
+    user-zoom:fixed;
     -webkit-touch-callout: none;
 }
 
