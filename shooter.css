@@ -14,7 +14,8 @@
     transform: rotate(38deg);
 }
 
-.alien img {
+.alien img { 
+    cursor:crosshair;
     height:150px;
     position: absolute;
     visibility: hidden;
