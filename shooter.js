@@ -555,7 +555,7 @@ function resolveCollision(particle, otherParticle) {
 
 aliens.forEach(obj => {
 
-    obj.addEventListener("ontouchstart", function(event) {
+    obj.addEventListener("click", function(event) {
 
         fireLock(event);                
     });
