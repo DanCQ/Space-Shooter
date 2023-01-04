@@ -554,7 +554,7 @@ function resolveCollision(particle, otherParticle) {
 
 document.body.addEventListener("click", function(event) {
 
-    event.preventDefault();
+   // event.preventDefault();
     fireLock(event);  
 });
 
