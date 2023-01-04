@@ -386,10 +386,9 @@ function animate() {
         alpha = 0.8;
     }
 
-
     //player projectiles
-    fireArr.forEach(obj => {
-        obj.update();
+    fireArr.forEach(obj => {   
+        obj.update(); 
     });
     
     enemyArr.forEach(obj => {
@@ -461,7 +460,7 @@ function creator() {
             clearInterval(enemyInt);
         }
 
-    }, 10000 + randomRange(-8000,8000));
+    }, 10000 + randomRange(-5000,5000));
 
 }
 
