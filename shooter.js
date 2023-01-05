@@ -181,7 +181,7 @@ class Enemy{
             }
     
 
-            if(enemyArr[i].hit > 75) {
+            if(enemyArr[i].hit > 60) {
                 aliens[i].style.visibility = "hidden";
                 aliens.splice(i, 1);
                 enemyArr.splice(i, 1);
@@ -539,17 +539,9 @@ function resolveCollision(particle, otherParticle) {
 
 document.body.addEventListener("click", function(event) {
     
+    event.preventDefault();
     fireLock(event);  
 });
-
-
-/* aliens.forEach(obj => {
-    
-    obj.addEventListener("click", function(event) {
-
-        event.preventDefault();
-    });
-}); */
 
 
 canvas.addEventListener("mousemove", function(event) {
