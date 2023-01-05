@@ -101,16 +101,7 @@ class Enemy{
             return 0;
         }
     }
-       
- /*    draw() {
-        //circle
-        c.beginPath();
-        c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-        c.strokeStyle = this.color;
-        c.lineWidth = 0.7;
-        c.stroke();
-        c.closePath();
-    } */
+
 
     update(enemyArr) {
 
@@ -160,6 +151,19 @@ class Enemy{
             
             aliens[i].style.left = `${-screenWidth / 2 - (aliens[i].offsetWidth / 2) + enemyArr[i].x}px`;
             aliens[i].style.top = `${-screenHeight / 2 - (aliens[i].offsetHeight / 2) + enemyArr[i].y}px`;
+            aliens[i].style.visibility = "visible";
+            
+            //fire detection on enemies
+            if(distance(fire.x, fire.y, enemyArr[i].x, enemyArr[i].y) - enemyArr[i].radius < 0) {
+                
+                enemyArr[i].hit++;
+                
+                fireVx = (fire.x - enemyArr[i].x);  //user x velocity set at impact
+                 
+                fireVy = (fire.y - enemyArr[i].y); //user y velocity set at impact
+
+                resolveCollision(fire, enemyArr[i]);
+            };
 
 
             //accurate collision detection among enemies
@@ -167,12 +171,12 @@ class Enemy{
             if(distance(this.x, this.y, enemyArr[i].x, enemyArr[i].y) - this.radius - enemyArr[i].radius < 0) {
 
                 //activates if combined velocity is above threshold
-                if(this.velocity.y + this.velocity.x + enemyArr[i].velocity.y + enemyArr[i].velocity.x > 0.5 || 
-                this.velocity.y + this.velocity.x + enemyArr[i].velocity.y + enemyArr[i].velocity.x < -0.5) {
+                if(this.velocity.y + this.velocity.x + enemyArr[i].velocity.y + enemyArr[i].velocity.x > 1 || 
+                this.velocity.y + this.velocity.x + enemyArr[i].velocity.y + enemyArr[i].velocity.x < -1) {
 
                     resolveCollision(this, enemyArr[i]);
-                } 
-            }
+                };
+            };
 
             //collision detection among user and enemies
             if(distance(user.x, user.y, enemyArr[i].x, enemyArr[i].y) - user.radius - enemyArr[i].radius < 0) {
@@ -182,36 +186,16 @@ class Enemy{
                 userVy = (user.y - enemyArr[i].y); //user y velocity set at impact
                 
                 resolveCollision(user, enemyArr[i]); //collision physics 
-            } 
-     
+            };
     
-            ////fire detection on enemies
-            if(distance(fire.x, fire.y, enemyArr[i].x, enemyArr[i].y) - enemyArr[i].radius < 0) {
 
-                fireVx = (fire.x - enemyArr[i].x);  //user x velocity set at impact
-                 
-                fireVy = (fire.y - enemyArr[i].y); //user y velocity set at impact
-
-                resolveCollision(fire, enemyArr[i]);
-            }
-
-            if(enemyArr[i].shot) { 
-                    
-                enemyArr[i].hit++;
-
-                setTimeout(function() {
-                    enemyArr[i].shot = false;
-                }, 1);
-
-            } 
-
-            if(enemyArr[i].hit > 400) {
+            if(enemyArr[i].hit > 300) {
                 aliens[i].style.visibility = "hidden";
-            }
+                aliens.splice(i, 1);
+                enemyArr.splice(i, 1);
+            };
 
         } 
-
-       //this.draw();
     }
 }
 
@@ -344,7 +328,7 @@ class Torpedo {
 
             if(distance(this.x, this.y, obj.x, obj.y) - obj.radius < 0) {
 
-                fireArr.splice(this, 1);
+                fireArr.splice(this, 1);                
             }
         });
 
@@ -385,15 +369,16 @@ function animate() {
     } else {
         alpha = 0.8;
     }
+    
+    enemyArr.forEach(obj => {
+        obj.update(enemyArr);
+    });
 
     //player projectiles
     fireArr.forEach(obj => {   
         obj.update(); 
     });
-    
-    enemyArr.forEach(obj => {
-        obj.update(enemyArr);
-    });
+
 
     //player object
     user.update();
@@ -433,7 +418,7 @@ function creator() {
     //enemy objects
     enemyInt = setInterval(function() {
             
-        if(count < aliens.length) { 
+        if(count < 6) { 
 
             let x, y;
             let color = colorArray[randomRange(0, colorArray.length - 1)]; //random color picker
@@ -453,7 +438,6 @@ function creator() {
             let alien = new Enemy(x,y,vx,vy,radius,color);
             
             enemyArr.push(alien); //sends to array
-            aliens[count].style.visibility = "visible";
             count++;   
              
         } else {
@@ -553,9 +537,17 @@ function resolveCollision(particle, otherParticle) {
 
 
 document.body.addEventListener("click", function(event) {
-
-    event.preventDefault();
+    
     fireLock(event);  
+});
+
+
+aliens.forEach(obj => {
+    
+    obj.addEventListener("click", function(event) {
+
+        event.preventDefault();
+    });
 });
 
 
