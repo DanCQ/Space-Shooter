@@ -543,13 +543,13 @@ document.body.addEventListener("click", function(event) {
 });
 
 
-aliens.forEach(obj => {
+/* aliens.forEach(obj => {
     
     obj.addEventListener("click", function(event) {
 
         event.preventDefault();
     });
-});
+}); */
 
 
 canvas.addEventListener("mousemove", function(event) {
