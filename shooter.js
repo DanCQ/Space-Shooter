@@ -445,7 +445,7 @@ function creator() {
             clearInterval(enemyInt);
         }
 
-    }, 10000 + randomRange(-3000, 5000));
+    }, 10000 + randomRange(0, 10000));
 
 }
 
