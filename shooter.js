@@ -83,6 +83,7 @@ class Enemy{
         x: vx,
         y: vy
     };
+    this.angle; //math formula to correctly follow in a circle;
     this.color = color;
     this.hit = 0;
     this.shot = false;
@@ -91,7 +92,7 @@ class Enemy{
     this.frictionY = 1 - this.size();
     this.frictionX = 1 - this.size();
     this.collision = 1 - this.size(); //added to Resolve Collision
-    this.mass = 1 + this.size(); //needed for Resolve collision
+    this.mass = 1 + this.size(); //needed for Resolve collision     
     }
 
     //takes size into account
@@ -149,9 +150,30 @@ class Enemy{
                 
         for(let i = 0; i < enemyArr.length; i++) {
             
+            aliens[i].style.visibility = "visible";
             aliens[i].style.left = `${-screenWidth / 2 - (aliens[i].offsetWidth / 2) + enemyArr[i].x}px`;
             aliens[i].style.top = `${-screenHeight / 2 - (aliens[i].offsetHeight / 2) + enemyArr[i].y}px`;
-            aliens[i].style.visibility = "visible";
+            enemyArr[i].angle = Math.atan2(user.y - enemyArr[i].y, user.x - enemyArr[i].x);
+            enemyArr[i].angle *= 180 / Math.PI; 
+
+            //enemies turn towards user 
+            if(enemyArr[i].x > user.x + aliens[i].offsetWidth / 2 && enemyArr[i].y > user.y + aliens[i].offsetHeight / 2) {
+    
+                aliens[i].style.transform = `scaleX(1) scaleY(1) rotate(${-enemyArr[i].angle}deg)`;
+            
+            } else if(enemyArr[i].x > user.x + aliens[i].offsetWidth / 2 && enemyArr[i].y < user.y + aliens[i].offsetHeight / 2) {
+    
+                aliens[i].style.transform = `scaleX(-1) scaleY(-1) rotate(${-enemyArr[i].angle}deg)`;
+            }
+
+            if(enemyArr[i].x < user.x + aliens[i].offsetWidth / 2 && enemyArr[i].y > user.y + aliens[i].offsetHeight / 2) {
+    
+                aliens[i].style.transform = `scaleX(-1) scaleY(-1) rotate(${-enemyArr[i].angle}deg)`;
+            
+            } else if(enemyArr[i].x < user.x + aliens[i].offsetWidth / 2 && enemyArr[i].y < user.y + aliens[i].offsetHeight / 2) {
+    
+                aliens[i].style.transform = `scaleX(1) scaleY(1) rotate(${-enemyArr[i].angle}deg)`;
+            }
 
 
             //collision detection among user and enemies
@@ -445,7 +467,7 @@ function creator() {
             clearInterval(enemyInt);
         }
 
-    }, 10000 + randomRange(0, 10000));
+    },  10000 + randomRange(0, 10000));
 
 }
 
