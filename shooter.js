@@ -46,6 +46,7 @@ let fireVx = 1;
 let fireVy = 1;
 let target; //for fire direction
 
+let notSelf = true;
 let user; //user interactivity
 let userVx; //user velocity x
 let userVy; //user velocity y
@@ -101,7 +102,6 @@ class Enemy{
             return 0;
         }
     }
-
 
     update(enemyArr) {
 
@@ -181,7 +181,8 @@ class Enemy{
             }
     
 
-            if(enemyArr[i].hit > 60) {
+            if(enemyArr[i].hit > 50) {
+
                 aliens[i].style.visibility = "hidden";
                 aliens.splice(i, 1);
                 enemyArr.splice(i, 1);
@@ -239,7 +240,7 @@ class Player {
     }
 
     update() {
-       
+        
         this.lastMouse.x += (mouse.x - this.lastMouse.x) * this.friction;
         this.lastMouse.y += (mouse.y - this.lastMouse.y) * this.friction;
         this.x = this.lastMouse.x;
@@ -277,8 +278,8 @@ class Torpedo {
         this.x = x;
         this.y = y;
         this.color = "cyan";
-        this.collision = 10;
-        this.mass = 10;
+        this.collision = 15;
+        this.mass = 15;
         this.radius = 1;
         this.velocity = {
             x: 5,
@@ -301,6 +302,7 @@ class Torpedo {
     }
 
     update() {
+
         let previous = {
             x: this.x - this.target.x,
             y: this.y - this.target.y
@@ -329,7 +331,7 @@ class Torpedo {
                 
                 obj.hit++;
 
-                fireArr.splice(this, 1);                
+                fireArr.splice(this, 1);     
             }
         });
 
@@ -461,7 +463,7 @@ function distance(x1,y1,x2,y2) {
 
 function fireLock(event) {
 
-    let laser = new Audio("assets/laser.mp3"); 
+    const laser = new Audio("assets/laser.mp3"); 
 
     //gets mouse angle from ship. coordinate y first, then x
     angle = Math.atan2(event.y - user.y, event.x - user.x);
@@ -540,7 +542,7 @@ function resolveCollision(particle, otherParticle) {
 document.body.addEventListener("click", function(event) {
 
     event.preventDefault();
-    fireLock(event);  
+    fireLock(event); 
 });
 
 
@@ -558,7 +560,7 @@ spacecraft.addEventListener("click", function() {
 
     portfolio.style.visibility = "visible";
 
-    time = 10000; //3 seconds, resets on click
+    time = 3000; //3 seconds, resets on click
     
     if(allow) {
 
