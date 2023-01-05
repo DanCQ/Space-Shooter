@@ -9,7 +9,7 @@ const alien4 = document.getElementById("alien4");
 const alien5 = document.getElementById("alien5");
 const alien6 = document.getElementById("alien6");
 
-let aliens = [alien1, alien2, alien3, alien4, alien5, alien6];
+const aliens = [alien1, alien2, alien3, alien4, alien5, alien6];
 
 let screenHeight = window.innerHeight;
 let screenWidth = window.innerWidth;
@@ -88,9 +88,9 @@ class Enemy{
     this.shot = false;
     this.radius = radius;
     this.gravity = 0; 
-    this.frictionY = 0.97 - this.size();
-    this.frictionX = 0.97 - this.size();
-    this.collision = 0.97 - this.size(); //added to Resolve Collision
+    this.frictionY = 1 - this.size();
+    this.frictionX = 1 - this.size();
+    this.collision = 1 - this.size(); //added to Resolve Collision
     this.mass = 1 + this.size(); //needed for Resolve collision
     }
 
@@ -153,7 +153,6 @@ class Enemy{
             aliens[i].style.top = `${-screenHeight / 2 - (aliens[i].offsetHeight / 2) + enemyArr[i].y}px`;
             aliens[i].style.visibility = "visible";
 
-
             //accurate collision detection among enemies
             if(this === enemyArr[i]) continue;
             if(distance(this.x, this.y, enemyArr[i].x, enemyArr[i].y) - this.radius - enemyArr[i].radius < 0) {
@@ -166,22 +165,21 @@ class Enemy{
                 }
             }
 
-
             //collision detection among user and enemies
             if(distance(user.x, user.y, enemyArr[i].x, enemyArr[i].y) - user.radius - enemyArr[i].radius < 0) {
 
                 //user.hit++;
                 //console.log(user.hit);
 
-                userVx = (user.x - enemyArr[i].x);  //user x velocity set at impact
+                userVx = user.x - enemyArr[i].x;  //user x velocity set at impact
                  
-                userVy = (user.y - enemyArr[i].y); //user y velocity set at impact
+                userVy = user.y - enemyArr[i].y; //user y velocity set at impact
                 
                 resolveCollision(user, enemyArr[i]); //collision physics 
             }
     
-
-            if(enemyArr[i].hit > 50) {
+            
+            if(enemyArr[i].hit > 60) {
 
                 aliens[i].style.visibility = "hidden";
                 aliens.splice(i, 1);
@@ -278,8 +276,8 @@ class Torpedo {
         this.x = x;
         this.y = y;
         this.color = "cyan";
-        this.collision = 15;
-        this.mass = 15;
+        this.collision = 1;
+        this.mass = 1;
         this.radius = 1;
         this.velocity = {
             x: 5,
@@ -334,7 +332,6 @@ class Torpedo {
                 fireArr.splice(this, 1);     
             }
         });
-
 
         this.x += this.target.x;
         this.y += this.target.y;
