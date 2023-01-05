@@ -18,7 +18,6 @@
     height:150px;
     position: absolute;
     visibility: hidden;
-    -webkit-touch-callout:none;
 }
 
 body {
