@@ -29,8 +29,9 @@ let mouse = {
 };
 
 //background
+let animation;
 let alpha = 0.8;
-let radians = 0.00020;
+let radians = 0.0002;
 let slow = false;
 let starArr = []; //object array
 
@@ -46,7 +47,6 @@ let fireVx = 1;
 let fireVy = 1;
 let target; //for fire direction
 
-let notSelf = true;
 let user; //user interactivity
 let userVx; //user velocity x
 let userVy; //user velocity y
@@ -153,6 +153,21 @@ class Enemy{
             aliens[i].style.top = `${-screenHeight / 2 - (aliens[i].offsetHeight / 2) + enemyArr[i].y}px`;
             aliens[i].style.visibility = "visible";
 
+
+            //collision detection among user and enemies
+            if(distance(user.x, user.y, enemyArr[i].x, enemyArr[i].y) - user.radius - enemyArr[i].radius < 0) {
+
+                //cancelAnimationFrame(animation); //stops animation frames
+
+                userVx = user.x - enemyArr[i].x; //user x velocity set at impact
+                 
+                userVy = user.y - enemyArr[i].y; //user y velocity set at impact
+                
+                resolveCollision(user, enemyArr[i]); //collision physics 
+
+            }
+
+
             //accurate collision detection among enemies
             if(this === enemyArr[i]) continue;
             if(distance(this.x, this.y, enemyArr[i].x, enemyArr[i].y) - this.radius - enemyArr[i].radius < 0) {
@@ -165,27 +180,13 @@ class Enemy{
                 }
             }
 
-            //collision detection among user and enemies
-            if(distance(user.x, user.y, enemyArr[i].x, enemyArr[i].y) - user.radius - enemyArr[i].radius < 0) {
 
-                //user.hit++;
-                //console.log(user.hit);
-
-                userVx = user.x - enemyArr[i].x;  //user x velocity set at impact
-                 
-                userVy = user.y - enemyArr[i].y; //user y velocity set at impact
-                
-                resolveCollision(user, enemyArr[i]); //collision physics 
-            }
-    
-            
             if(enemyArr[i].hit > 60) {
 
                 aliens[i].style.visibility = "hidden";
                 aliens.splice(i, 1);
                 enemyArr.splice(i, 1);
             }
-
         } 
     }
 }
@@ -343,7 +344,7 @@ class Torpedo {
 
 function animate() { 
 
-    requestAnimationFrame(animate);
+    animation = requestAnimationFrame(animate);
 
     c.fillStyle = `rgba(0, 0, 0, ${alpha})`;
     c.fillRect(0,0,screenWidth,screenHeight);
@@ -541,6 +542,12 @@ document.body.addEventListener("click", function(event) {
     event.preventDefault();
     fireLock(event); 
 });
+
+
+portfolio.addEventListener("click", function() {
+
+    window.open("https://dany-cervantes-portfolio.pages.dev/");
+})
 
 
 canvas.addEventListener("mousemove", function(event) {
