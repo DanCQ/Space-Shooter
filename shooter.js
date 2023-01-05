@@ -152,18 +152,6 @@ class Enemy{
             aliens[i].style.left = `${-screenWidth / 2 - (aliens[i].offsetWidth / 2) + enemyArr[i].x}px`;
             aliens[i].style.top = `${-screenHeight / 2 - (aliens[i].offsetHeight / 2) + enemyArr[i].y}px`;
             aliens[i].style.visibility = "visible";
-            
-            //fire detection on enemies
-            if(distance(fire.x, fire.y, enemyArr[i].x, enemyArr[i].y) - enemyArr[i].radius < 0) {
-                
-                enemyArr[i].hit++;
-                
-                fireVx = (fire.x - enemyArr[i].x);  //user x velocity set at impact
-                 
-                fireVy = (fire.y - enemyArr[i].y); //user y velocity set at impact
-
-                resolveCollision(fire, enemyArr[i]);
-            };
 
 
             //accurate collision detection among enemies
@@ -175,25 +163,29 @@ class Enemy{
                 this.velocity.y + this.velocity.x + enemyArr[i].velocity.y + enemyArr[i].velocity.x < -1) {
 
                     resolveCollision(this, enemyArr[i]);
-                };
-            };
+                }
+            }
+
 
             //collision detection among user and enemies
             if(distance(user.x, user.y, enemyArr[i].x, enemyArr[i].y) - user.radius - enemyArr[i].radius < 0) {
+
+                //user.hit++;
+                //console.log(user.hit);
 
                 userVx = (user.x - enemyArr[i].x);  //user x velocity set at impact
                  
                 userVy = (user.y - enemyArr[i].y); //user y velocity set at impact
                 
                 resolveCollision(user, enemyArr[i]); //collision physics 
-            };
+            }
     
 
-            if(enemyArr[i].hit > 300) {
+            if(enemyArr[i].hit > 75) {
                 aliens[i].style.visibility = "hidden";
                 aliens.splice(i, 1);
                 enemyArr.splice(i, 1);
-            };
+            }
 
         } 
     }
@@ -232,6 +224,7 @@ class Player {
         this.x = x;
         this.y = y;
         this.collision = 1;
+        this.hit = 0;
         this.mass = 1;
         this.radius = 60; //radius of player object
         this.friction = 0.005;
@@ -323,14 +316,23 @@ class Torpedo {
             fireArr.splice(this, 1);
         }
 
-        //fire detection
+        //fire detection on enemies
         enemyArr.forEach(obj => {
 
             if(distance(this.x, this.y, obj.x, obj.y) - obj.radius < 0) {
 
+                fireVx = this.x - obj.x;  //user x velocity set at impact
+             
+                fireVy = this.y - obj.y; //user y velocity set at impact
+
+                resolveCollision(this, obj);
+                
+                obj.hit++;
+
                 fireArr.splice(this, 1);                
             }
         });
+
 
         this.x += this.target.x;
         this.y += this.target.y;
@@ -378,7 +380,6 @@ function animate() {
     fireArr.forEach(obj => {   
         obj.update(); 
     });
-
 
     //player object
     user.update();
@@ -444,7 +445,7 @@ function creator() {
             clearInterval(enemyInt);
         }
 
-    }, 10000 + randomRange(-5000,5000));
+    }, 10000 + randomRange(-3000, 5000));
 
 }
 
