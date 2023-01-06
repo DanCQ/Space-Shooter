@@ -1,6 +1,7 @@
 const canvas = document.getElementById("canvas");
 const portfolio = document.querySelector(".portfolio");
 const spacecraft = document.getElementById("spacecraft"); //player
+const laser = new Audio("assets/laser.mp3"); 
 
 const alien1 = document.getElementById("alien1");
 const alien2 = document.getElementById("alien2");
@@ -482,8 +483,6 @@ function distance(x1,y1,x2,y2) {
 
 
 function fireLock(event) {
-
-    const laser = new Audio("assets/laser.mp3"); 
 
     //gets mouse angle from ship. coordinate y first, then x
     angle = Math.atan2(event.y - user.y, event.x - user.x);
