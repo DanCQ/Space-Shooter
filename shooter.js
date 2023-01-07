@@ -323,7 +323,6 @@ class Torpedo {
     }
 
     update() {
-        this.color = "cyan";
 
         let previous = {
             x: this.x - this.target.x,
@@ -350,7 +349,7 @@ class Torpedo {
                 fireVy = this.y - obj.y; //user y velocity set at impact
                 
                 //blue blood;
-                this.color = "blue";
+                \\this.color = "blue";
                 this.target = { 
                     x: Math.cos(Math.PI * 2 + randomRange(-10,10)) * Math.random(), //creates circular particle positions
                     y: Math.sin(Math.PI * 2 + randomRange(-10,10)) * Math.random() //creates curved particle positions
