@@ -351,8 +351,8 @@ class Torpedo {
                 //blue blood;
                 this.color = "blue";
                 this.target = { 
-                    x: Math.cos(Math.PI * 2 / randomRange(-10,10)) * Math.random(), //creates circular particle positions
-                    y: Math.sin(Math.PI * 2 / randomRange(-10,10)) * Math.random() //creates curved particle positions
+                    x: Math.cos(Math.PI * 2 + randomRange(-10,10)) * Math.random(), //creates circular particle positions
+                    y: Math.sin(Math.PI * 2 + randomRange(-10,10)) * Math.random() //creates curved particle positions
                 };
             
                 resolveCollision(this, obj);
