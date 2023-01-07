@@ -187,7 +187,6 @@ class Enemy{
                 userVy = user.y - enemyArr[i].y; //user y velocity set at impact
                 
                 resolveCollision(user, enemyArr[i]); //collision physics 
-
             }
 
 
@@ -204,7 +203,7 @@ class Enemy{
             }
 
 
-            if(enemyArr[i].hit > 60) {
+            if(enemyArr[i].hit > 3500) {
 
                 aliens[i].style.visibility = "hidden";
                 aliens.splice(i, 1);
@@ -343,19 +342,23 @@ class Torpedo {
         //fire detection on enemies
         enemyArr.forEach(obj => {
 
-            if(distance(this.x, this.y, obj.x, obj.y) - obj.radius < 0) {
+            if(distance(this.x, this.y, obj.x, obj.y) - obj.radius + 15 < 0) {
 
                 fireVx = this.x - obj.x;  //user x velocity set at impact
              
                 fireVy = this.y - obj.y; //user y velocity set at impact
-
-                resolveCollision(this, obj);
                 
+                //blue blood;
+                this.color = "blue";
+                this.target = { 
+                    x: Math.cos(Math.PI * 2 / randomRange(1,5)) * Math.random(), //creates circular particle positions
+                    y: Math.sin(Math.PI * 2 / randomRange(1,5)) * Math.random() //creates curved particle positions
+                };
+            
+                resolveCollision(this, obj);
                 obj.hit++;
-
-                fireArr.splice(this, 1);     
             }
-        });
+        }); 
 
         this.x += this.target.x;
         this.y += this.target.y;
