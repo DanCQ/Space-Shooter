@@ -334,12 +334,10 @@ class Torpedo {
             y: 5 + fireVy
         };
 
-        
-        this.x += this.target.x;
-        this.y += this.target.y;
-
-        this.draw(previous);
-        
+        //prevents slowdown by deleting offscreen projectiles
+        if(this.x > screenWidth || this.x < 0 || this.y > screenHeight || this.y < 0) {
+            fireArr.splice(this, 1);
+        }
 
         //fire detection on enemies
         enemyArr.forEach(obj => {
@@ -353,20 +351,17 @@ class Torpedo {
                 resolveCollision(this, obj);
                 obj.hit++;
 
-                //blue blood;
-                this.color = "blue";
                 this.target = { 
                     x: Math.cos(Math.PI * 2 + randomRange(-10,10)) * Math.random(), //creates circular particle positions
                     y: Math.sin(Math.PI * 2 + randomRange(-10,10)) * Math.random() //creates curved particle positions
                 };    
             }
         }); 
-        
-        
-        //prevents slowdown by deleting offscreen projectiles
-        if(this.x > screenWidth || this.x < 0 || this.y > screenHeight || this.y < 0) {
-            fireArr.splice(this, 1);
-        }        
+
+        this.x += this.target.x;
+        this.y += this.target.y;
+
+        this.draw(previous);
     }
 }
 
