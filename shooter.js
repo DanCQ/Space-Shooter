@@ -348,15 +348,15 @@ class Torpedo {
              
                 fireVy = this.y - obj.y; //user y velocity set at impact
                 
+                resolveCollision(this, obj);
+                obj.hit++;
+
                 //blue blood;
-                //this.color = "blue";
+                this.color = "blue";
                 this.target = { 
                     x: Math.cos(Math.PI * 2 + randomRange(-10,10)) * Math.random(), //creates circular particle positions
                     y: Math.sin(Math.PI * 2 + randomRange(-10,10)) * Math.random() //creates curved particle positions
-                };
-            
-                resolveCollision(this, obj);
-                obj.hit++;
+                };    
             }
         }); 
 
