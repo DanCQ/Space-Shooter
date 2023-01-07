@@ -323,6 +323,7 @@ class Torpedo {
     }
 
     update() {
+        this.color = "cyan";
 
         let previous = {
             x: this.x - this.target.x,
