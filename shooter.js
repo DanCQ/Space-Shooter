@@ -41,6 +41,8 @@ let count = 0; //for enemy deployment
 let enemyArr = []; //enemy object array
 let enemyInt; //for enemy deployment
 let fireArr = []; //torpedos object array
+let array = [];
+let ex;
 
 let angle; //for fire and mouse position
 let fire = ""; //for torpedo objects
@@ -73,6 +75,63 @@ const colorArray = [
     "seashell", "sienna", "silver", "skyblue", "slateblue", "slategray", "snow", "springgreen", "steelblue", "tan",
     "teal", "thistle", "tomato", "turquoise", "violet", "wheat", "white", "whitesmoke", "yellow", "yellowgreen"
 ];
+
+
+//object blueprint
+class Explosion {
+    constructor(x, y, radius, color, velocity) {
+        this.x = x;
+        this.y = y;
+        this.radius = radius; //size of circles
+        this.color = color;
+        this.velocity = velocity; 
+        this.gravity = 0.0035; //pull down force
+        this.friction =  0.996; //slows sideways movement
+        this.alpha = 1; //visibility value
+    }
+
+    //circle
+    draw() {
+        c.save();
+        c.globalAlpha = this.alpha;
+        c.beginPath();
+        c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+        c.fillStyle = `${this.color}`;
+        c.fill();
+        c.closePath();
+        c.restore();
+    }
+
+    update() {
+        this.x += this.velocity.x * randomRange(1, 3); //sideways expansion force 
+        this.y += this.velocity.y * randomRange(1, 3); //velocity and dowards pull
+        
+        this.draw();
+    }
+}
+
+
+function explode() {
+
+    let color = "cyan";
+    let fireworks;
+    let x = ex.x; 
+    let y = ex.y;
+    sparkCount = 300;
+
+    for(let i = 0; i < sparkCount; i++) {
+
+        let radius = randomRange(0.5, 1);
+        let radians = Math.PI * 2 / sparkCount;
+
+        fireworks = new Explosion(x, y, radius, color, { 
+            x: Math.cos(radians * i) * Math.random(), //creates circular particle positions
+            y: Math.sin(radians * i) * Math.random()  //creates curved particle positions
+        });
+        
+        array.push(fireworks);
+    }
+}
 
 
 //object blueprint
@@ -203,11 +262,16 @@ class Enemy{
             }
 
 
-            if(enemyArr[i].hit > 3500) {
+            if(enemyArr[i].hit > 10) {
 
                 aliens[i].style.visibility = "hidden";
                 aliens.splice(i, 1);
+                ex = {
+                    x: enemyArr[i].x,
+                    y: enemyArr[i].y
+                }
                 enemyArr.splice(i, 1);
+                explode();
             }
         } 
     }
@@ -298,7 +362,7 @@ class Torpedo {
     constructor(x, y, tx, ty) {
         this.x = x;
         this.y = y;
-        this.color = "cyan";
+        this.color = "chartreuse";
         this.collision = 1;
         this.mass = 1;
         this.radius = 1;
@@ -386,7 +450,7 @@ function animate() {
 
     radians += 0.00020;
 
-    if(slow) {
+/*     if(slow) {
         if(alpha > 0.001) {
             alpha -= 0.0025;
         }  
@@ -394,7 +458,7 @@ function animate() {
         
     } else {
         alpha = 0.8;
-    }
+    } */
     
     enemyArr.forEach(obj => {
         obj.update(enemyArr);
@@ -403,6 +467,19 @@ function animate() {
     //player projectiles
     fireArr.forEach(obj => {   
         obj.update(); 
+    });
+
+    array.forEach(obj => {
+        
+        obj.update();
+       
+        setTimeout(function() { 
+            obj.alpha -= 0.05;
+            
+            if(obj.alpha < 0) {
+                array.splice(obj, 1);
+            }
+        }, 1000);
     });
 
     //player object
