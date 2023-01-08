@@ -1,7 +1,7 @@
 const canvas = document.getElementById("canvas");
+const laser = new Audio("assets/laser.mp3"); 
 const portfolio = document.querySelector(".portfolio");
 const spacecraft = document.getElementById("spacecraft"); //player
-const laser = new Audio("assets/laser.mp3"); 
 
 const alien1 = document.getElementById("alien1");
 const alien2 = document.getElementById("alien2");
@@ -30,8 +30,8 @@ let mouse = {
 };
 
 //background
-let animation;
 let alpha = 0.8;
+let animation;
 let radians = 0.0002;
 let slow = false;
 let starArr = []; //object array
@@ -40,9 +40,9 @@ let starArr = []; //object array
 let count = 0; //for enemy deployment
 let enemyArr = []; //enemy object array
 let enemyInt; //for enemy deployment
-let fireArr = []; //torpedos object array
-let array = [];
 let ex;
+let explodeArr = [];
+let fireArr = []; //torpedos object array
 
 let angle; //for fire and mouse position
 let fire = ""; //for torpedo objects
@@ -78,65 +78,8 @@ const colorArray = [
 
 
 //object blueprint
-class Explosion {
-    constructor(x, y, radius, color, velocity) {
-        this.x = x;
-        this.y = y;
-        this.radius = radius; //size of circles
-        this.color = color;
-        this.velocity = velocity; 
-        this.gravity = 0.0035; //pull down force
-        this.friction =  0.996; //slows sideways movement
-        this.alpha = 1; //visibility value
-    }
-
-    //circle
-    draw() {
-        c.save();
-        c.globalAlpha = this.alpha;
-        c.beginPath();
-        c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-        c.fillStyle = `${this.color}`;
-        c.fill();
-        c.closePath();
-        c.restore();
-    }
-
-    update() {
-        this.x += this.velocity.x * randomRange(1, 3); //sideways expansion force 
-        this.y += this.velocity.y * randomRange(1, 3); //velocity and dowards pull
-        
-        this.draw();
-    }
-}
-
-
-function explode() {
-
-    let color = "cyan";
-    let fireworks;
-    let x = ex.x; 
-    let y = ex.y;
-    sparkCount = 300;
-
-    for(let i = 0; i < sparkCount; i++) {
-
-        let radius = randomRange(0.5, 1);
-        let radians = Math.PI * 2 / sparkCount;
-
-        fireworks = new Explosion(x, y, radius, color, { 
-            x: Math.cos(radians * i) * Math.random(), //creates circular particle positions
-            y: Math.sin(radians * i) * Math.random()  //creates curved particle positions
-        });
-        
-        array.push(fireworks);
-    }
-}
-
-
-//object blueprint
 class Enemy{
-    constructor (x,y,vx,vy,radius,color) {
+    constructor (x,y,vx,vy,radius) {
     this.x = x;
     this.y = y;
     this.velocity = {
@@ -144,11 +87,8 @@ class Enemy{
         y: vy
     };
     this.angle; //math formula to correctly follow in a circle;
-    this.color = color;
     this.hit = 0;
-    this.shot = false;
     this.radius = radius;
-    this.gravity = 0; 
     this.frictionY = 1 - this.size();
     this.frictionX = 1 - this.size();
     this.collision = 1 - this.size(); //added to Resolve Collision
@@ -174,7 +114,7 @@ class Enemy{
         if(this.y + this.radius + this.velocity.y >= screenHeight || this.y + this.velocity.y <= this.radius) {
             this.velocity.y = -this.velocity.y * this.frictionY;  //reduces upward movement on floor bounce
         } else {
-            this.velocity.y += this.gravity; //gravity
+            this.velocity.y; //gravity
         }
 
         if(this.y + this.radius <= this.radius * 2 - 5) {   //rapidly unstick from ceiling
@@ -262,7 +202,7 @@ class Enemy{
             }
 
 
-            if(enemyArr[i].hit > 10) {
+            if(enemyArr[i].hit > 500) {
 
                 aliens[i].style.visibility = "hidden";
                 aliens.splice(i, 1);
@@ -274,6 +214,37 @@ class Enemy{
                 explode();
             }
         } 
+    }
+}
+
+
+//object blueprint
+class Explosion {
+    constructor(x, y, radius, velocity) {
+        this.x = x;
+        this.y = y;
+        this.radius = radius; //size of circles
+        this.velocity = velocity; 
+        this.alpha = 1; //visibility value
+    }
+
+    //circle
+    draw() {
+        c.save();
+        c.globalAlpha = this.alpha;
+        c.beginPath();
+        c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+        c.fillStyle = `cyan`;
+        c.fill();
+        c.closePath();
+        c.restore();
+    }
+
+    update() {
+        this.x += this.velocity.x * randomRange(1, 3); //sideways expansion force 
+        this.y += this.velocity.y * randomRange(1, 3); //velocity and dowards pull
+        
+        this.draw();
     }
 }
 
@@ -377,6 +348,7 @@ class Torpedo {
     }
 
     draw(previous) {
+        c.save();
         c.beginPath();
         c.strokeStyle = this.color;
         c.lineWidth = 2.5;
@@ -384,6 +356,7 @@ class Torpedo {
         c.lineTo(this.x, this.y);
         c.stroke();
         c.closePath();
+        c.restore();
     }
 
     update() {
@@ -459,7 +432,7 @@ function animate() {
     } else {
         alpha = 0.8;
     } */
-    
+
     enemyArr.forEach(obj => {
         obj.update(enemyArr);
     });
@@ -469,7 +442,7 @@ function animate() {
         obj.update(); 
     });
 
-    array.forEach(obj => {
+    explodeArr.forEach(obj => {
         
         obj.update();
        
@@ -477,7 +450,7 @@ function animate() {
             obj.alpha -= 0.05;
             
             if(obj.alpha < 0) {
-                array.splice(obj, 1);
+                explodeArr.splice(obj, 1);
             }
         }, 1000);
     });
@@ -523,7 +496,6 @@ function creator() {
         if(count < 6) { 
 
             let x, y;
-            let color = colorArray[randomRange(0, colorArray.length - 1)]; //random color picker
             let vx = randomRange(-25,25); //random velocity x-axis
             let vy = randomRange(-25,25); //random velocity y-axis
             let radius = alien1.offsetHeight / 2;
@@ -537,7 +509,7 @@ function creator() {
                 y = Math.random() < 0.5 ? 0 - radius : screenHeight + radius; 
             }
                     
-            let alien = new Enemy(x,y,vx,vy,radius,color);
+            let alien = new Enemy(x,y,vx,vy,radius);
             
             enemyArr.push(alien); //sends to array
             count++;   
@@ -557,6 +529,28 @@ function distance(x1,y1,x2,y2) {
     let ySpace = y2 - y1;
 
     return Math.sqrt(Math.pow(xSpace,2) + Math.pow(ySpace,2));
+}
+
+
+function explode() {
+
+    let sparks;
+    let x = ex.x; 
+    let y = ex.y;
+    let sparkCount = 300;
+
+    for(let i = 0; i < sparkCount; i++) {
+
+        let radius = randomRange(0.5, 1);
+        let radians = Math.PI * 2 / sparkCount;
+
+        sparks = new Explosion(x, y, radius, { 
+            x: Math.cos(radians * i) * Math.random(), //creates circular particle positions
+            y: Math.sin(radians * i) * Math.random()  //creates curved particle positions
+        });
+        
+        explodeArr.push(sparks);
+    }
 }
 
 
