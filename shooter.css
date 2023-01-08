@@ -39,8 +39,6 @@ canvas {
     background-color: black;
     height:100%;
     position: absolute;
-    user-select: none;
-    -webkit-user-select: none;
     width:100%;
 }
 
