@@ -31,7 +31,7 @@ body {
     min-width:100vw;
     overflow: hidden;
     user-select: none;
-    user-select: noselect;
+    -webkit-user-select: none;
     -webkit-touch-callout:none;
 }
 
@@ -39,7 +39,8 @@ canvas {
     background-color: black;
     height:100%;
     position: absolute;
-    user-select: noselect;
+    user-select: none;
+    -webkit-user-select: none;
     width:100%;
 }
 
