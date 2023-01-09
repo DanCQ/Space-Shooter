@@ -155,6 +155,18 @@ class Enemy{
             aliens[i].style.top = `${-screenHeight / 2 - (aliens[i].offsetHeight / 2) + enemyArr[i].y}px`;
             enemyArr[i].angle = Math.atan2(user.y - enemyArr[i].y, user.x - enemyArr[i].x);
             enemyArr[i].angle *= 180 / Math.PI; 
+            
+            if(enemyArr[i].hit > 500) {
+
+                aliens[i].style.visibility = "hidden";
+                aliens.splice(i, 1);
+                ex = {
+                    x: enemyArr[i].x,
+                    y: enemyArr[i].y
+                }
+                enemyArr.splice(i, 1);
+                explode();
+            }
 
             //enemies turn towards user 
             if(enemyArr[i].x > user.x + aliens[i].offsetWidth / 2 && enemyArr[i].y > user.y + aliens[i].offsetHeight / 2) {
@@ -202,17 +214,7 @@ class Enemy{
             }
 
 
-            if(enemyArr[i].hit > 500) {
-
-                aliens[i].style.visibility = "hidden";
-                aliens.splice(i, 1);
-                ex = {
-                    x: enemyArr[i].x,
-                    y: enemyArr[i].y
-                }
-                enemyArr.splice(i, 1);
-                explode();
-            }
+           
         } 
     }
 }
