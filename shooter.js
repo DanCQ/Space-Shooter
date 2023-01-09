@@ -150,12 +150,13 @@ class Enemy{
                 
         for(let i = 0; i < enemyArr.length; i++) {
             
-            aliens[i].style.visibility = "visible";
+            aliens[i].style.visibility = slow == false ? "visible" : "hidden";
             aliens[i].style.left = `${-screenWidth / 2 - (aliens[i].offsetWidth / 2) + enemyArr[i].x}px`;
             aliens[i].style.top = `${-screenHeight / 2 - (aliens[i].offsetHeight / 2) + enemyArr[i].y}px`;
             enemyArr[i].angle = Math.atan2(user.y - enemyArr[i].y, user.x - enemyArr[i].x);
             enemyArr[i].angle *= 180 / Math.PI; 
-            
+
+
             if(enemyArr[i].hit > 500) {
 
                 aliens[i].style.visibility = "hidden";
@@ -165,7 +166,7 @@ class Enemy{
                     y: enemyArr[i].y
                 }
                 enemyArr.splice(i, 1);
-                explode();
+                explode("squid");
             }
 
             //enemies turn towards user 
@@ -189,9 +190,9 @@ class Enemy{
 
 
             //collision detection among user and enemies
-            if(distance(user.x, user.y, enemyArr[i].x, enemyArr[i].y) - user.radius - enemyArr[i].radius < 0) {
+            if(distance(user.x, user.y, enemyArr[i].x, enemyArr[i].y) - user.radius - enemyArr[i].radius < 0 && user.alive) {
 
-                //cancelAnimationFrame(animation); //stops animation frames
+                user.hit++;
 
                 userVx = user.x - enemyArr[i].x; //user x velocity set at impact
                  
@@ -213,8 +214,6 @@ class Enemy{
                 }
             }
 
-
-           
         } 
     }
 }
@@ -222,12 +221,13 @@ class Enemy{
 
 //object blueprint
 class Explosion {
-    constructor(x, y, radius, velocity) {
+    constructor(x, y, radius, color, velocity) {
         this.x = x;
         this.y = y;
         this.radius = radius; //size of circles
         this.velocity = velocity; 
         this.alpha = 1; //visibility value
+        this.color = color;
     }
 
     //circle
@@ -236,13 +236,14 @@ class Explosion {
         c.globalAlpha = this.alpha;
         c.beginPath();
         c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-        c.fillStyle = `cyan`;
+        c.fillStyle = this.color;
         c.fill();
         c.closePath();
         c.restore();
     }
 
     update() {
+
         this.x += this.velocity.x * randomRange(1, 3); //sideways expansion force 
         this.y += this.velocity.y * randomRange(1, 3); //velocity and dowards pull
         
@@ -282,6 +283,7 @@ class Player {
     constructor(x, y) {
         this.x = x;
         this.y = y;
+        this.alive = true;
         this.collision = 1;
         this.hit = 0;
         this.mass = 1;
@@ -326,6 +328,23 @@ class Player {
         //positions ship image and updates movement
         spacecraft.style.left = `${-screenWidth / 2 - (spacecraft.offsetWidth / 2) + user.x}px`;
         spacecraft.style.top = `${-screenHeight / 2 - (spacecraft.offsetHeight / 2) + user.y}px`;
+
+        if(user.hit > 100 && user.alive) {
+            spacecraft.style.visibility = "hidden";
+
+            ex = {
+                x: this.x,
+                y: this.y
+            }
+            this.alive = false;
+            explode("user");
+            
+            setTimeout(function() {
+
+                slow = true;
+               //cancelAnimationFrame(animation); //stops animation frames
+            },5000);
+        }
     };
 }
 
@@ -425,7 +444,7 @@ function animate() {
 
     radians += 0.00020;
 
-/*     if(slow) {
+    if(slow) {
         if(alpha > 0.001) {
             alpha -= 0.0025;
         }  
@@ -433,7 +452,7 @@ function animate() {
         
     } else {
         alpha = 0.8;
-    } */
+    }
 
     enemyArr.forEach(obj => {
         obj.update(enemyArr);
@@ -449,6 +468,7 @@ function animate() {
         obj.update();
        
         setTimeout(function() { 
+            
             obj.alpha -= 0.05;
             
             if(obj.alpha < 0) {
@@ -458,8 +478,9 @@ function animate() {
     });
 
     //player object
-    user.update();
-
+    if(user.alive) {
+        user.update();
+    }
 }
 
 
@@ -495,7 +516,7 @@ function creator() {
     //enemy objects
     enemyInt = setInterval(function() {
             
-        if(count < 6) { 
+        if(count < 6 && user.alive) { 
 
             let x, y;
             let vx = randomRange(-25,25); //random velocity x-axis
@@ -534,19 +555,20 @@ function distance(x1,y1,x2,y2) {
 }
 
 
-function explode() {
+function explode(whom) {
 
     let sparks;
     let x = ex.x; 
     let y = ex.y;
-    let sparkCount = 300;
+    let sparkCount =  whom == "squid" ? 300 : 1000;
+    let color = whom == "squid" ? "cyan" : "wheat";
 
     for(let i = 0; i < sparkCount; i++) {
 
         let radius = randomRange(0.5, 1);
         let radians = Math.PI * 2 / sparkCount;
 
-        sparks = new Explosion(x, y, radius, { 
+        sparks = new Explosion(x, y, radius, color, { 
             x: Math.cos(radians * i) * Math.random(), //creates circular particle positions
             y: Math.sin(radians * i) * Math.random()  //creates curved particle positions
         });
@@ -635,7 +657,10 @@ function resolveCollision(particle, otherParticle) {
 document.body.addEventListener("click", function(event) {
 
     event.preventDefault();
-    fireLock(event); 
+
+    if(user.alive) {
+        fireLock(event); 
+    }
 });
 
 
