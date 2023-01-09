@@ -157,7 +157,7 @@ class Enemy{
             enemyArr[i].angle *= 180 / Math.PI; 
 
 
-            if(enemyArr[i].hit > 500) {
+            if(enemyArr[i].hit > 800) {
 
                 aliens[i].style.visibility = "hidden";
                 aliens.splice(i, 1);
