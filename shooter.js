@@ -329,7 +329,7 @@ class Player {
         spacecraft.style.left = `${-screenWidth / 2 - (spacecraft.offsetWidth / 2) + user.x}px`;
         spacecraft.style.top = `${-screenHeight / 2 - (spacecraft.offsetHeight / 2) + user.y}px`;
 
-        if(user.hit > 100 && user.alive) {
+        if(user.hit > 600 && user.alive) {
             spacecraft.style.visibility = "hidden";
 
             ex = {
