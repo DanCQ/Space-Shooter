@@ -10,7 +10,7 @@ const alien4 = document.getElementById("alien4");
 const alien5 = document.getElementById("alien5");
 const alien6 = document.getElementById("alien6");
 
-const aliens = [alien1, alien2, alien3, alien4, alien5, alien6];
+let aliens = [alien1, alien2, alien3, alien4, alien5, alien6];
 
 let screenHeight = window.innerHeight;
 let screenWidth = window.innerWidth;
@@ -147,7 +147,7 @@ class Enemy{
         this.x += this.velocity.x; 
         this.y += this.velocity.y;
 
-                
+
         for(let i = 0; i < enemyArr.length; i++) {
             
             aliens[i].style.visibility = slow == false ? "visible" : "hidden";
@@ -160,6 +160,7 @@ class Enemy{
             if(enemyArr[i].hit > 800) {
 
                 aliens[i].style.visibility = "hidden";
+                aliens.push(aliens[i]);
                 aliens.splice(i, 1);
                 ex = {
                     x: enemyArr[i].x,
@@ -167,6 +168,7 @@ class Enemy{
                 }
                 enemyArr.splice(i, 1);
                 explode("squid");
+                count--;
             }
 
             //enemies turn towards user 
@@ -537,9 +539,9 @@ function creator() {
             enemyArr.push(alien); //sends to array
             count++;   
              
-        } else {
+        }/*  else {
             clearInterval(enemyInt);
-        }
+        } */
 
     },  10000 + randomRange(0, 10000));
 
