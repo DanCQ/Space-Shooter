@@ -9,7 +9,7 @@ const alien3 = document.getElementById("alien3");
 const alien4 = document.getElementById("alien4");
 const alien5 = document.getElementById("alien5");
 const alien6 = document.getElementById("alien6");
-
+//enemy images
 let aliens = [alien1, alien2, alien3, alien4, alien5, alien6];
 
 let screenHeight = window.innerHeight;
@@ -160,15 +160,15 @@ class Enemy{
             if(enemyArr[i].hit > 800) {
 
                 aliens[i].style.visibility = "hidden";
-                aliens.push(aliens[i]);
-                aliens.splice(i, 1);
+                aliens.push(aliens[i]); //recycles destroyed enemy image to end of array
+                aliens.splice(i, 1); //removes dead enemy image
                 ex = {
                     x: enemyArr[i].x,
                     y: enemyArr[i].y
                 }
-                enemyArr.splice(i, 1);
+                enemyArr.splice(i, 1); //removes dead enemy movements
                 explode("squid");
-                count--;
+                count--; //reduces enemy count for creator
             }
 
             //enemies turn towards user 
@@ -684,14 +684,12 @@ canvas.addEventListener("mousemove", function(event) {
 
 //touch swipe controls
 canvas.addEventListener("touchmove", function(event) {
-
-    //event.preventDefault();
     
-    //gets mouse angle from ship
-    angle = Math.atan2(event.y - user.y, event.x - user.x);
-
     mouse.x = event.touches[0].clientX;
     mouse.y = event.touches[0].clientY;
+    
+    //sets ship direction
+    angle = Math.atan2(mouse.y - user.y, mouse.x - user.x);
 });
 
 
