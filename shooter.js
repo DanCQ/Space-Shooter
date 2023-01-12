@@ -685,8 +685,8 @@ canvas.addEventListener("mousemove", function(event) {
 //touch swipe controls
 canvas.addEventListener("touchmove", function(event) {
     
-    mouse.x = event.touches[0].clientX;
-    mouse.y = event.touches[0].clientY;
+    mouse.x = event.touches[0].clientX * 1.5;
+    mouse.y = event.touches[0].clientY * 1.5;
     
     //sets ship direction
     angle = Math.atan2(mouse.y - user.y, mouse.x - user.x);
