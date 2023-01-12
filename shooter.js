@@ -662,6 +662,8 @@ document.body.addEventListener("click", function(event) {
 
     if(user.alive) {
         fireLock(event); 
+    } else {
+        location.reload(); //refreshes page if dead
     }
 });
 
@@ -684,8 +686,8 @@ canvas.addEventListener("mousemove", function(event) {
 
 canvas.addEventListener("touchmove", function(event) {
     //touchscreen swipe controls
-    mouse.x = event.touches[0].clientX * 1.5;
-    mouse.y = event.touches[0].clientY * 1.5;
+    mouse.x = event.touches[0].clientX;
+    mouse.y = event.touches[0].clientY;
     
     //sets ship direction
     angle = Math.atan2(mouse.y - user.y, mouse.x - user.x);
