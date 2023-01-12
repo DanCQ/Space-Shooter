@@ -1,7 +1,7 @@
 const canvas = document.getElementById("canvas");
-const laser = new Audio("assets/laser.mp3"); 
 const portfolio = document.querySelector(".portfolio");
 const spacecraft = document.getElementById("spacecraft"); //player
+let laser = new Audio("assets/laser.mp3"); 
 
 const alien1 = document.getElementById("alien1");
 const alien2 = document.getElementById("alien2");
@@ -49,6 +49,7 @@ let fire = ""; //for torpedo objects
 let fireVx = 1;
 let fireVy = 1;
 let target; //for fire direction
+let isTouch = 'ontouchstart' in window; //checks if it's a touchscreen
 
 let user; //user interactivity
 let userVx; //user velocity x
@@ -585,6 +586,10 @@ function explode(whom) {
 
 
 function fireLock(event) {
+    
+    if(!isTouch) { //better sound if not touch screen
+        laser = new Audio("assets/laser.mp3"); 
+    }
 
     //gets mouse angle from ship. coordinate y first, then x
     angle = Math.atan2(event.y - user.y, event.x - user.x);
