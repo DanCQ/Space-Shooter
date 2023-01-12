@@ -682,6 +682,19 @@ canvas.addEventListener("mousemove", function(event) {
 });
 
 
+//touch swipe controls
+canvas.addEventListener("touchmove", function(event) {
+
+    //event.preventDefault();
+    
+    //gets mouse angle from ship
+    angle = Math.atan2(event.y - user.y, event.x - user.x);
+
+    mouse.x = event.touches[0].clientX;
+    mouse.y = event.touches[0].clientY;
+});
+
+
 spacecraft.addEventListener("click", function() {
 
     portfolio.style.visibility = "visible";
