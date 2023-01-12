@@ -682,9 +682,8 @@ canvas.addEventListener("mousemove", function(event) {
 });
 
 
-//touch swipe controls
 canvas.addEventListener("touchmove", function(event) {
-    
+    //touchscreen swipe controls
     mouse.x = event.touches[0].clientX * 2;
     mouse.y = event.touches[0].clientY * 2;
     
