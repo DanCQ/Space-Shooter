@@ -586,8 +586,8 @@ function explode(whom) {
 
 
 function fireLock(event) {
-    
-    if(!isTouch) { //better sound if not touch screen
+    //better sound if not touchscreen
+    if(!isTouch) { //performance issue
         laser = new Audio("assets/laser.mp3"); 
     }
 
