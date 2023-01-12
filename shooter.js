@@ -169,6 +169,10 @@ class Enemy{
                 enemyArr.splice(i, 1); //removes dead enemy movements
                 explode("squid");
                 count--; //reduces enemy count for creator
+                user.hit -= 50; //restores player life
+                if(user.hit < 0) {
+                    user.hit = 0;
+                }
             }
 
             //enemies turn towards user 
@@ -661,8 +665,10 @@ document.body.addEventListener("click", function(event) {
     event.preventDefault();
 
     if(user.alive) {
-        fireLock(event); 
-    } else {
+
+        fireLock(event); //fires if alive
+
+    } else if (slow) {
         location.reload(); //refreshes page if dead
     }
 });
