@@ -6,6 +6,9 @@ const scratch = new Audio("assets/sounds/scratch.mp3");
 const splat = new Audio("assets/sounds/splat.mp3");
 let laser = new Audio("assets/sounds/laser.mp3"); 
 
+const thinkAboutIt = new Audio("assets/music/ThinkAboutIt.mp3");
+
+
 const alien1 = document.getElementById("alien1");
 const alien2 = document.getElementById("alien2");
 const alien3 = document.getElementById("alien3");
@@ -351,11 +354,14 @@ class Player {
             }
             this.alive = false;
             explode("user");
+            
             explosion.play();
             
             setTimeout(function() {
-
                 slow = true;
+                thinkAboutIt.play();
+                thinkAboutIt.loop = true;
+                
                //cancelAnimationFrame(animation); //stops animation frames
             },5000);
         }
