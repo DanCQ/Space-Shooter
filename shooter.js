@@ -1,7 +1,9 @@
 const canvas = document.getElementById("canvas");
 const portfolio = document.querySelector(".portfolio");
 const spacecraft = document.getElementById("spacecraft"); //player
-let laser = new Audio("assets/laser.mp3"); 
+const explosion = new Audio("assets/sounds/explosion.mp3");
+const splat = new Audio("assets/sounds/splat.mp3");
+let laser = new Audio("assets/sounds/laser.mp3"); 
 
 const alien1 = document.getElementById("alien1");
 const alien2 = document.getElementById("alien2");
@@ -169,6 +171,7 @@ class Enemy{
                 }
                 enemyArr.splice(i, 1); //removes dead enemy movements
                 explode("squid");
+                splat.play();
                 count--; //reduces enemy count for creator
                 user.hit -= 50; //restores player life
                 if(user.hit < 0) {
@@ -345,6 +348,7 @@ class Player {
             }
             this.alive = false;
             explode("user");
+            explosion.play();
             
             setTimeout(function() {
 
@@ -588,7 +592,7 @@ function explode(whom) {
 function fireLock(event) {
     //better sound if not touchscreen
     if(!isTouch) { //performance issue
-        laser = new Audio("assets/laser.mp3"); 
+        laser = new Audio("assets/sounds/laser.mp3"); 
     }
 
     //gets mouse angle from ship. coordinate y first, then x
