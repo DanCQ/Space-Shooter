@@ -2,6 +2,7 @@ const canvas = document.getElementById("canvas");
 const portfolio = document.querySelector(".portfolio");
 const spacecraft = document.getElementById("spacecraft"); //player
 const explosion = new Audio("assets/sounds/explosion.mp3");
+const scratch = new Audio("assets/sounds/scratch.mp3");
 const splat = new Audio("assets/sounds/splat.mp3");
 let laser = new Audio("assets/sounds/laser.mp3"); 
 
@@ -207,6 +208,8 @@ class Enemy{
                 userVx = user.x - enemyArr[i].x; //user x velocity set at impact
                  
                 userVy = user.y - enemyArr[i].y; //user y velocity set at impact
+
+                scratch.play();
                 
                 resolveCollision(user, enemyArr[i]); //collision physics 
             }
