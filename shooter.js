@@ -210,7 +210,7 @@ class Enemy{
                 userVy = user.y - enemyArr[i].y; //user y velocity set at impact
 
                 scratch.play();
-                
+
                 resolveCollision(user, enemyArr[i]); //collision physics 
             }
 
@@ -456,7 +456,7 @@ function animate() {
     });
     c.restore();
 
-    radians += 0.00020;
+    radians += 0.00025;
 
     if(slow) {
         if(alpha > 0.001) {
