@@ -428,7 +428,7 @@ class Torpedo {
         };
 
         //prevents slowdown by deleting offscreen projectiles
-        if(this.x > screenWidth || this.x < 0 || this.y > screenHeight || this.y < 0) {
+        if(this.x > screenWidth || this.x < 0 || this.y > screenHeight || this.y < 0 || slow) {
             fireArr.splice(this, 1);
         }
 
