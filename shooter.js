@@ -1,6 +1,18 @@
+//sets initial screen size
 const canvas = document.getElementById("canvas");
+let screenHeight = window.innerHeight;
+let screenWidth = window.innerWidth;
+canvas.height = screenHeight;
+canvas.width = screenWidth;
+c = canvas.getContext("2d");
+
 const portfolio = document.querySelector(".portfolio");
-const spacecraft = document.getElementById("spacecraft"); //player
+//used for portfolio interval
+let allow = true; 
+let off; 
+let time = 0;
+
+//sound effects
 const explosion = new Audio("assets/sounds/explosion.mp3");
 const scratch = new Audio("assets/sounds/scratch.mp3");
 const splat = new Audio("assets/sounds/splat.mp3");
@@ -15,29 +27,20 @@ const gotham = new Audio("assets/music/Gothamlicious.mp3");
 const honor = new Audio("assets/music/HonorBound.mp3");
 const think = new Audio("assets/music/ThinkAboutIt.mp3");
 
-const gameover = [fanfare, think];
-const soundtrack = [battle, buster, flying, gotham, honor];
-let  music = soundtrack[randomRange(0, soundtrack.length - 1)];
+const gameover = [fanfare, think]; //gameover music
+const soundtrack = [battle, buster, flying, gotham, honor]; //soundtrack
+let  music = soundtrack[randomRange(0, soundtrack.length - 1)]; //plays throughout gameplay
 
+//enemy images
 const alien1 = document.getElementById("alien1");
 const alien2 = document.getElementById("alien2");
 const alien3 = document.getElementById("alien3");
 const alien4 = document.getElementById("alien4");
 const alien5 = document.getElementById("alien5");
 const alien6 = document.getElementById("alien6");
-//enemy images
+
 let aliens = [alien1, alien2, alien3, alien4, alien5, alien6];
-
-let screenHeight = window.innerHeight;
-let screenWidth = window.innerWidth;
-canvas.height = screenHeight;
-canvas.width = screenWidth;
-c = canvas.getContext("2d");
-
-//used for interval
-let allow = true; 
-let off; 
-let time = 0;
+const spacecraft = document.getElementById("spacecraft"); //player
 
 //mouse location
 let mouse = { 
@@ -45,31 +48,29 @@ let mouse = {
     y: screenHeight / 2
 };
 
-//background
-let alpha = 0.8;
-let animation;
-let radians = 0.0002;
-let slow = false;
-let starArr = []; //object array
+//for animation changes
+let alpha = 0.8; //animation opacity
+let animation; //can be used to start or stop animation
+let radians = 0.0002; //galaxy rotation rate
+let slow = false; //causes gameover screen
+let starArr = []; //galaxy array
 
 //game objects
 let count = 0; //for enemy deployment
 let enemyArr = []; //enemy object array
-let enemyInt; //enemy deployment interval
 let ex; //for exact explosion location
 let explodeArr = []; //holds explosion particles
 let fireArr = []; //torpedos object array
 let num = 3; //limits enemy numbers
 let kill = 100; //enemy life points
 
-let angle; //for fire and mouse position
-let fire = ""; //for torpedo objects
+let direction; //for fire and mouse position
 let fireVx = 1;
 let fireVy = 1;
-let target; //for fire direction
 let isTouch = 'ontouchstart' in window; //checks if it's a touchscreen
 
-let interaction = false;
+let interaction = false; //if true, sound won't be muted
+let repair = 10;
 let user; //user interactivity
 let userVx; //user velocity x
 let userVy; //user velocity y
@@ -192,7 +193,7 @@ class Enemy{
                 splat.play();
                 count--; //reduces enemy count for creator
 
-                user.hit -= 25; //restores player life
+                user.hit -= repair; //restores player life
                 if(user.hit < 0) {
                     user.hit = 0;
                 }
@@ -343,7 +344,7 @@ class Player {
 
 
         //spacecraft animations
-        let rotation = angle; //cannot alter angle, used in fire position too
+        let rotation = direction; //cannot alter angle, used in fire position too
         rotation *= 180 / Math.PI; //math formula to correctly follow in a circle
     
         //makes ship face in mouse direction
@@ -563,7 +564,7 @@ function creator() {
     user = new Player(screenWidth / 2, screenHeight / 2);
 
     //enemy objects
-    enemyInt = setInterval(function() {
+    setInterval(function() {
             
         if(count < num && user.alive) { 
 
@@ -595,7 +596,7 @@ function creator() {
             music.play();
         }
 
-    },  10000 + randomRange(-5000, 5000)); //enemy intervals
+    },  10000 + randomRange(-5000, 10000)); //enemy intervals
 
 }
 
@@ -628,19 +629,23 @@ function display() {
         starArr.push(star);
     }  
 
-    //helps to set difficulty in smaller screens
+    //sets difficulty depending on screen size
     if(screenWidth >= 1200) {
         num = 6;  
-        kill = 1000;
+        kill = 850;
+        repair = 10;
     } else if(screenWidth >= 900) {
         num = 5;
-        kill = 700;
+        kill = 650;
+        repair = 20;
     } else if(screenWidth >= 600) {
         num = 4;
-        kill = 400;
+        kill = 450;
+        repair = 30;
     } else {
         num = 3;
-        kill = 100;
+        kill = 250;
+        repair = 40;
     }
 
 }
@@ -676,16 +681,16 @@ function fireLock(event) {
     }
 
     //gets mouse angle from ship. coordinate y first, then x
-    angle = Math.atan2(event.y - user.y, event.x - user.x);
+    direction = Math.atan2(event.y - user.y, event.x - user.x);
             
     //sends fire at this angle
-    target = {
-        x: Math.cos(angle),
-        y: Math.sin(angle)
+    let target = {
+        x: Math.cos(direction),
+        y: Math.sin(direction)
     }
 
-    //starts from user location
-    fire = new Torpedo(user.x, user.y, target.x, target.y);
+    //torpedo objects launch from user location
+    let fire = new Torpedo(user.x, user.y, target.x, target.y);
 
     fireArr.push(fire);
     laser.play();
@@ -774,7 +779,7 @@ portfolio.addEventListener("click", function() {
 canvas.addEventListener("mousemove", function(event) {
     
     //gets mouse angle from ship
-    angle = Math.atan2(event.y - user.y, event.x - user.x);
+    direction = Math.atan2(event.y - user.y, event.x - user.x);
 
     mouse.x = event.x;
     mouse.y = event.y;
@@ -787,7 +792,7 @@ canvas.addEventListener("touchmove", function(event) {
     mouse.y = event.touches[0].clientY;
     
     //sets ship direction
-    angle = Math.atan2(mouse.y - user.y, mouse.x - user.x);
+    direction = Math.atan2(mouse.y - user.y, mouse.x - user.x);
 });
 
 
