@@ -356,24 +356,6 @@ class Player {
         spacecraft.style.left = `${-screenWidth / 2 - (spacecraft.offsetWidth / 2) + user.x}px`;
         spacecraft.style.top = `${-screenHeight / 2 - (spacecraft.offsetHeight / 2) + user.y}px`;
 
-        //music volume decreases as player dies
-        if(user.hit > 700) {
-            music.volume = 0.1;
-        } else if(user.hit > 600) {
-            music.volume = 0.2;
-        } else if(user.hit > 500) {
-            music.volume = 0.3;
-        } else if(user.hit > 400) {
-            music.volume = 0.4;
-        } else if(user.hit > 300) {
-            music.volume = 0.5;
-        } else if(user.hit > 200) {
-            music.volume = 0.6;
-        } else if(user.hit > 100) {
-            music.volume = 0.7;
-        } else {
-            music.volume = 0.8;
-        }
 
         if(user.hit > 800 && user.alive) {
             
@@ -495,17 +477,46 @@ function animate() {
     });
     c.restore();
 
-    radians += 0.0003;
-
-    if(slow) {
+    //music volume decreases as player dies
+    if(user.hit > 800 && slow) {
         if(alpha > 0.001) {
             alpha -= 0.0025;
         }  
-        radians += 0.005;
-        
-    } else {
+        radians += 0.005;   
+    } else if(user.hit > 700) {
+        music.volume = 0.1;
+        radians += 0.0009;
+        alpha = 0.1;
+    } else if(user.hit > 600) {
+        music.volume = 0.2;
+        radians += 0.0008;
+        alpha = 0.2;
+    } else if(user.hit > 500) {
+        music.volume = 0.3;
+        radians += 0.0007;
+        alpha = 0.3;
+    } else if(user.hit > 400) {
+        music.volume = 0.4;
+        radians += 0.0006;
+        alpha = 0.4;
+    } else if(user.hit > 300) {
+        music.volume = 0.5;
+        radians += 0.0005;
+        alpha = 0.5;
+    } else if(user.hit > 200) {
+        music.volume = 0.6;
+        radians += 0.0004;
+        alpha = 0.6;
+    } else if(user.hit > 100) {
+        music.volume = 0.7;
+        radians += 0.0003;
+        alpha = 0.7;
+    } else if(user.hit < 100) {
+        music.volume = 0.8;
+        radians += 0.0002;
         alpha = 0.8;
     }
+    
 
     enemyArr.forEach(obj => {
         obj.update(enemyArr);
@@ -599,7 +610,7 @@ function creator() {
             music.play();
         }
 
-    },  10000 + randomRange(-8000, 8000)); //enemy intervals
+    },  10000 + randomRange(-5000, 5000)); //enemy intervals
 
 }
 
