@@ -596,7 +596,7 @@ function creator() {
             music.play();
         }
 
-    },  10000 + randomRange(-5000, 10000)); //enemy intervals
+    },  10000 + randomRange(-5000, 5000)); //enemy intervals
 
 }
 
@@ -637,15 +637,15 @@ function display() {
     } else if(screenWidth >= 900) {
         num = 5;
         kill = 650;
-        repair = 20;
+        repair = 15;
     } else if(screenWidth >= 600) {
         num = 4;
         kill = 450;
-        repair = 30;
+        repair = 20;
     } else {
         num = 3;
         kill = 250;
-        repair = 40;
+        repair = 25;
     }
 
 }
