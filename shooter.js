@@ -375,10 +375,10 @@ class Player {
             
             setTimeout(function() {
                 slow = true;
-
                 thinkAboutIt.play();
+                thinkAboutIt.volume = 0.9;
                 thinkAboutIt.loop = true;
-            },5000);
+            },3500);
         }
     };
 }
@@ -482,15 +482,15 @@ function animate() {
         if(alpha > 0.001) {
             alpha -= 0.0025;
         }  
-        radians += 0.005;   
+        radians += 0.005;
     } else if(user.hit > 700) {
         music.volume = 0.1;
         radians += 0.0009;
-        alpha = 0.1;
+        alpha = 0.2;
     } else if(user.hit > 600) {
         music.volume = 0.2;
         radians += 0.0008;
-        alpha = 0.2;
+        alpha = 0.25;
     } else if(user.hit > 500) {
         music.volume = 0.3;
         radians += 0.0007;
