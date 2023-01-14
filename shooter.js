@@ -7,15 +7,17 @@ const splat = new Audio("assets/sounds/splat.mp3");
 let laser = new Audio("assets/sounds/laser.mp3"); 
 
 //music tracks
-const thinkAboutIt = new Audio("assets/music/ThinkAboutIt.mp3");
-const flying = new Audio("assets/music/AdventuresOfFlyingJack.mp3");
 const battle = new Audio("assets/music/BattleReady.mp3");
+const buster = new Audio("assets/music/VideoGameBlockbuster.mp3");
+const fanfare = new Audio("assets/music/FanfareX.mp3");
+const flying = new Audio("assets/music/AdventuresOfFlyingJack.mp3");
 const gotham = new Audio("assets/music/Gothamlicious.mp3");
 const honor = new Audio("assets/music/HonorBound.mp3");
-const buster = new Audio("assets/music/VideoGameBlockbuster.mp3");
+const think = new Audio("assets/music/ThinkAboutIt.mp3");
 
-const musicTracks = [flying, battle, gotham, honor, buster];
-let  music = musicTracks[randomRange(0, musicTracks.length - 1)];
+const gameover = [fanfare, think];
+const soundtrack = [battle, buster, flying, gotham, honor];
+let  music = soundtrack[randomRange(0, soundtrack.length - 1)];
 
 const alien1 = document.getElementById("alien1");
 const alien2 = document.getElementById("alien2");
@@ -53,10 +55,12 @@ let starArr = []; //object array
 //game objects
 let count = 0; //for enemy deployment
 let enemyArr = []; //enemy object array
-let enemyInt; //for enemy deployment
-let ex;
-let explodeArr = [];
+let enemyInt; //enemy deployment interval
+let ex; //for exact explosion location
+let explodeArr = []; //holds explosion particles
 let fireArr = []; //torpedos object array
+let num = 3; //limits enemy numbers
+let kill = 100; //enemy life points
 
 let angle; //for fire and mouse position
 let fire = ""; //for torpedo objects
@@ -173,7 +177,7 @@ class Enemy{
             enemyArr[i].angle *= 180 / Math.PI; 
 
 
-            if(enemyArr[i].hit > 800) {
+            if(enemyArr[i].hit > kill) {
 
                 aliens[i].style.visibility = "hidden";
                 aliens.push(aliens[i]); //recycles destroyed enemy image to end of array
@@ -375,9 +379,11 @@ class Player {
             
             setTimeout(function() {
                 slow = true;
-                thinkAboutIt.play();
-                thinkAboutIt.volume = 0.9;
-                thinkAboutIt.loop = true;
+
+                music = gameover[randomRange(0, gameover.length - 1)];
+                music.play();
+                music.volume = 1;
+                music.loop = true;
             },3500);
         }
     };
@@ -548,31 +554,10 @@ function animate() {
 }
 
 
-//used for screen resizing
-function backgroundDisplay() {
-
-    starArr = [];
-
-    //background galaxy 
-    for(let i = 0; i < 500; i++) {
-
-        //makes up for offset of screen in rotation animation
-        let x = randomRange(-screenWidth, screenWidth); 
-        let y = randomRange(-screenHeight, screenHeight);
-        let color = colorArray[randomRange(0, colorArray.length - 1)];
-        let radius = randomRange(0.6, 1);
-            
-        let star = new Galaxy(x, y, radius, color);
-            
-        starArr.push(star);
-    }  
-}
-
-
 function creator() {
 
     //background galaxy
-    backgroundDisplay();
+    display();
     
     //player object
     user = new Player(screenWidth / 2, screenHeight / 2);
@@ -580,7 +565,7 @@ function creator() {
     //enemy objects
     enemyInt = setInterval(function() {
             
-        if(count < 6 && user.alive) { 
+        if(count < num && user.alive) { 
 
             let x, y;
             let vx = randomRange(-25,25); //random velocity x-axis
@@ -603,7 +588,7 @@ function creator() {
         }
         
         if(music.ended) {
-            music = musicTracks[randomRange(0, musicTracks.length - 1)];
+            music = soundtrack[randomRange(0, soundtrack.length - 1)];
         }
 
         if(interaction && music.paused && user.alive) {
@@ -621,6 +606,43 @@ function distance(x1,y1,x2,y2) {
     let ySpace = y2 - y1;
 
     return Math.sqrt(Math.pow(xSpace,2) + Math.pow(ySpace,2));
+}
+
+
+//used for screen resizing
+function display() {
+
+    starArr = [];
+
+    //background galaxy 
+    for(let i = 0; i < 500; i++) {
+
+        //makes up for offset of screen in rotation animation
+        let x = randomRange(-screenWidth, screenWidth); 
+        let y = randomRange(-screenHeight, screenHeight);
+        let color = colorArray[randomRange(0, colorArray.length - 1)];
+        let radius = randomRange(0.6, 1);
+            
+        let star = new Galaxy(x, y, radius, color);
+            
+        starArr.push(star);
+    }  
+
+    //helps to set difficulty in smaller screens
+    if(screenWidth >= 1200) {
+        num = 6;  
+        kill = 1000;
+    } else if(screenWidth >= 900) {
+        num = 5;
+        kill = 700;
+    } else if(screenWidth >= 600) {
+        num = 4;
+        kill = 400;
+    } else {
+        num = 3;
+        kill = 100;
+    }
+
 }
 
 
@@ -803,7 +825,7 @@ setTimeout(function() {
             screenWidth = window.innerWidth;
             canvas.height = screenHeight;
             canvas.width = screenWidth;
-            backgroundDisplay(); //redeploy stars
+            display(); //redeploy stars
         },100);
     });
 }, 25); 
