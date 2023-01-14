@@ -61,7 +61,7 @@ canvas {
 
 #spacecraft {
     position:absolute;
-    width:85px;
+    width:80px;
 }
 
 
@@ -72,7 +72,7 @@ canvas {
     }
 
     #spacecraft {
-        width:80px;
+        width:75px;
     }
 
 }
@@ -84,7 +84,7 @@ canvas {
     }
 
     #spacecraft {
-        width:75px;
+        width:70px;
     }
 
 }
@@ -96,7 +96,7 @@ canvas {
     }
 
     #spacecraft {
-        width:70px;
+        width:65px;
     }
     
 }
@@ -108,7 +108,7 @@ canvas {
     }
 
     #spacecraft {
-        width:65px;
+        width:60px;
     }
 
 }
@@ -120,7 +120,7 @@ canvas {
     }
 
     #spacecraft {
-        width:60px;
+        width:55px;
     }
 
 }
