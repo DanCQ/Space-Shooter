@@ -599,7 +599,7 @@ function creator() {
             music.play();
         }
 
-    },  10000 + randomRange(-6000, 10000)); //enemy intervals
+    },  10000 + randomRange(-8000, 10000)); //enemy intervals
 
 }
 
