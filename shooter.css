@@ -15,7 +15,7 @@
 }
 
 .alien img { 
-    height:150px;
+    height:140px;
     position: absolute;
     visibility: hidden;
 }
@@ -61,23 +61,11 @@ canvas {
 
 #spacecraft {
     position:absolute;
-    width:90px;
+    width:85px;
 }
 
 
 @media (max-width: 1200px) {
-
-    .alien img {
-        height:140px;
-    }
-
-    #spacecraft {
-        width:85px;
-    }
-
-}
-
-@media (max-width: 1000px) {
 
     .alien img {
         height:130px;
@@ -89,7 +77,7 @@ canvas {
 
 }
 
-@media (max-width: 800px) {
+@media (max-width: 1000px) {
 
     .alien img {
         height:120px;
@@ -101,7 +89,7 @@ canvas {
 
 }
 
-@media (max-width: 600px) {
+@media (max-width: 800px) {
 
     .alien img {
         height:110px;
@@ -110,10 +98,10 @@ canvas {
     #spacecraft {
         width:70px;
     }
-
+    
 }
 
-@media (max-width: 400px) {
+@media (max-width: 600px) {
 
     .alien img {
         height:100px;
@@ -121,6 +109,18 @@ canvas {
 
     #spacecraft {
         width:65px;
+    }
+
+}
+
+@media (max-width: 400px) {
+
+    .alien img {
+        height:90px;
+    }
+
+    #spacecraft {
+        width:60px;
     }
 
 }
