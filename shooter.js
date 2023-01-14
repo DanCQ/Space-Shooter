@@ -6,8 +6,16 @@ const scratch = new Audio("assets/sounds/scratch.mp3");
 const splat = new Audio("assets/sounds/splat.mp3");
 let laser = new Audio("assets/sounds/laser.mp3"); 
 
+//music tracks
 const thinkAboutIt = new Audio("assets/music/ThinkAboutIt.mp3");
+const flying = new Audio("assets/music/AdventuresOfFlyingJack.mp3");
+const battle = new Audio("assets/music/BattleReady.mp3");
+const gotham = new Audio("assets/music/Gothamlicious.mp3");
+const honor = new Audio("assets/music/HonorBound.mp3");
+const buster = new Audio("assets/music/VideoGameBlockbuster.mp3");
 
+const musicTracks = [flying, battle, gotham, honor, buster];
+let  music = musicTracks[randomRange(0, musicTracks.length - 1)];
 
 const alien1 = document.getElementById("alien1");
 const alien2 = document.getElementById("alien2");
@@ -57,6 +65,7 @@ let fireVy = 1;
 let target; //for fire direction
 let isTouch = 'ontouchstart' in window; //checks if it's a touchscreen
 
+let interaction = false;
 let user; //user interactivity
 let userVx; //user velocity x
 let userVy; //user velocity y
@@ -174,10 +183,12 @@ class Enemy{
                     y: enemyArr[i].y
                 }
                 enemyArr.splice(i, 1); //removes dead enemy movements
+
                 explode("squid");
                 splat.play();
                 count--; //reduces enemy count for creator
-                user.hit -= 50; //restores player life
+
+                user.hit -= 25; //restores player life
                 if(user.hit < 0) {
                     user.hit = 0;
                 }
@@ -345,24 +356,46 @@ class Player {
         spacecraft.style.left = `${-screenWidth / 2 - (spacecraft.offsetWidth / 2) + user.x}px`;
         spacecraft.style.top = `${-screenHeight / 2 - (spacecraft.offsetHeight / 2) + user.y}px`;
 
-        if(user.hit > 600 && user.alive) {
-            spacecraft.style.visibility = "hidden";
+        //music volume decreases as player dies
+        if(user.hit > 700) {
+            music.volume = 0.1;
+        } else if(user.hit > 600) {
+            music.volume = 0.2;
+        } else if(user.hit > 500) {
+            music.volume = 0.3;
+        } else if(user.hit > 400) {
+            music.volume = 0.4;
+        } else if(user.hit > 300) {
+            music.volume = 0.5;
+        } else if(user.hit > 200) {
+            music.volume = 0.6;
+        } else if(user.hit > 100) {
+            music.volume = 0.7;
+        } else {
+            music.volume = 0.8;
+        }
 
+        if(user.hit > 800 && user.alive) {
+            
+            music.pause();
+            
+            spacecraft.style.visibility = "hidden";
+                
             ex = {
                 x: this.x,
                 y: this.y
             }
+
             this.alive = false;
             explode("user");
-            
+
             explosion.play();
             
             setTimeout(function() {
                 slow = true;
+
                 thinkAboutIt.play();
                 thinkAboutIt.loop = true;
-                
-               //cancelAnimationFrame(animation); //stops animation frames
             },5000);
         }
     };
@@ -556,12 +589,17 @@ function creator() {
             
             enemyArr.push(alien); //sends to array
             count++;   
-             
-        }/*  else {
-            clearInterval(enemyInt);
-        } */
+        }
+        
+        if(music.ended) {
+            music = musicTracks[randomRange(0, musicTracks.length - 1)];
+        }
 
-    },  10000 + randomRange(0, 10000));
+        if(interaction && music.paused && user.alive) {
+            music.play();
+        }
+
+    },  10000 + randomRange(-5000, 5000)); //enemy intervals
 
 }
 
@@ -681,12 +719,14 @@ function resolveCollision(particle, otherParticle) {
 document.body.addEventListener("click", function(event) {
 
     event.preventDefault();
+    interaction = true;
 
     if(user.alive) {
 
         fireLock(event); //fires if alive
 
     } else if (slow) {
+
         location.reload(); //refreshes page if dead
     }
 });
@@ -763,4 +803,5 @@ window.onload = function() {
     creator();
     
     animate();
+
 };
