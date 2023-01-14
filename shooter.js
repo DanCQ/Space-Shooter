@@ -234,8 +234,8 @@ class Enemy{
             if(distance(this.x, this.y, enemyArr[i].x, enemyArr[i].y) - this.radius - enemyArr[i].radius < 0) {
 
                 //activates if combined velocity is above threshold
-                if(this.velocity.y + this.velocity.x + enemyArr[i].velocity.y + enemyArr[i].velocity.x > 1 || 
-                this.velocity.y + this.velocity.x + enemyArr[i].velocity.y + enemyArr[i].velocity.x < -1) {
+                if(this.velocity.y + this.velocity.x + enemyArr[i].velocity.y + enemyArr[i].velocity.x > 0.5 || 
+                this.velocity.y + this.velocity.x + enemyArr[i].velocity.y + enemyArr[i].velocity.x < -0.5) {
 
                     resolveCollision(this, enemyArr[i]);
                 }
@@ -495,7 +495,7 @@ function animate() {
     });
     c.restore();
 
-    radians += 0.00025;
+    radians += 0.0003;
 
     if(slow) {
         if(alpha > 0.001) {
@@ -599,7 +599,7 @@ function creator() {
             music.play();
         }
 
-    },  10000 + randomRange(-5000, 5000)); //enemy intervals
+    },  10000 + randomRange(-6000, 10000)); //enemy intervals
 
 }
 
