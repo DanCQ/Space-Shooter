@@ -14,6 +14,10 @@
     transform: rotate(38deg);
 }
 
+#alien7 {
+    transform: rotate(40deg);
+}
+
 .alien img { 
     height:140px;
     position: absolute;
