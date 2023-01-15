@@ -38,8 +38,9 @@ const alien3 = document.getElementById("alien3");
 const alien4 = document.getElementById("alien4");
 const alien5 = document.getElementById("alien5");
 const alien6 = document.getElementById("alien6");
+const alien7 = document.getElementById("alien7");
 
-let aliens = [alien1, alien2, alien3, alien4, alien5, alien6];
+let aliens = [alien1, alien2, alien3, alien4, alien5, alien6, alien7];
 const spacecraft = document.getElementById("spacecraft"); //player
 
 //mouse location
