@@ -190,7 +190,7 @@ class Enemy{
                 }
                 enemyArr.splice(i, 1); //removes dead enemy movements
 
-                explode("squid");
+                explode();
                 splat.play();
                 count--; //reduces enemy count for creator
 
@@ -375,7 +375,7 @@ class Player {
             }
 
             this.alive = false;
-            explode("user");
+            explode(user);
 
             explosion.play();
             
@@ -384,7 +384,7 @@ class Player {
 
                 music = gameover[randomRange(0, gameover.length - 1)];
                 music.play();
-                music.volume = 1;
+                music.volume = 0.9;
                 music.loop = true;
             },3500);
         }
@@ -652,16 +652,31 @@ function display() {
 }
 
 
-function explode(whom) {
+function explode(who) {
 
     let sparks;
     let x = ex.x; 
     let y = ex.y;
-    let sparkCount =  whom == "squid" ? 300 : 1000;
-    let color = whom == "squid" ? "cyan" : "wheat";
+    let sparkCount = who == user ? 750 : 500;
+    let splatArr = [];
+
+    switch(who) {
+        case user:
+            splatArr = ["beige","bisque","cornsilk","floralwhite","ghostwhite","ivory","midnightblue",
+            "oldlace","palegoldenrod","papayawhip","seashell","snow","wheat","wheat","white"];
+            break;
+        default:
+            splatArr = ["aliceblue","aliceblue","aqua","aqua","cyan","cyan","darkblue","darkorange",
+            "darkmagenta","darkslateblue","deepskyblue","deepskyblue","dodgerblue","floralwhite","ghostwhite",
+            "ghostwhite","indigo","indigo","ivory","ivory","lightblue","lightblue","lightcyan","lightcyan",
+            "lightskyblue","lightskyblue","mediumblue","midnightblue","navy","orangered","powderblue","seashell",
+            "seashell","skyblue","skyblue","snow","snow","white","white","whitesmoke","whitesmoke"];
+            break;
+    }
 
     for(let i = 0; i < sparkCount; i++) {
 
+        let color = splatArr[randomRange(0, splatArr.length - 1)];
         let radius = randomRange(0.5, 1);
         let radians = Math.PI * 2 / sparkCount;
 
