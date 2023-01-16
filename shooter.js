@@ -660,18 +660,17 @@ function explode(who) {
     let sparkCount = who == user ? 750 : 500;
     let splatArr = [];
 
-    switch(who) {
-        case user:
-            splatArr = ["beige","bisque","cornsilk","floralwhite","ghostwhite","ivory","midnightblue",
-            "oldlace","palegoldenrod","papayawhip","seashell","snow","wheat","wheat","white"];
-            break;
-        default:
-            splatArr = ["aliceblue","aliceblue","aqua","aqua","cyan","cyan","darkblue","darkorange",
+    if(who == user) {
+        splatArr = ["beige","bisque","cornsilk","floralwhite","ghostwhite","ivory","midnightblue",
+            "oldlace","palegoldenrod","papayawhip","seashell","snow","wheat","wheat","white"
+        ];
+    } else {
+        splatArr = ["aliceblue","aliceblue","aqua","aqua","cyan","cyan","darkblue","darkorange",
             "darkmagenta","darkslateblue","deepskyblue","deepskyblue","dodgerblue","floralwhite","ghostwhite",
             "ghostwhite","indigo","indigo","ivory","ivory","lightblue","lightblue","lightcyan","lightcyan",
             "lightskyblue","lightskyblue","mediumblue","midnightblue","navy","orangered","powderblue","seashell",
-            "seashell","skyblue","skyblue","snow","snow","white","white","whitesmoke","whitesmoke"];
-            break;
+            "seashell","skyblue","skyblue","snow","snow","white","white","whitesmoke","whitesmoke"
+        ];
     }
 
     for(let i = 0; i < sparkCount; i++) {
