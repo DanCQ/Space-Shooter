@@ -184,7 +184,7 @@ class Enemy{
 
             if(enemyArr[i].hit > kill) {
 
-                totalScore(50);
+                totalScore(100);
 
                 aliens[i].style.visibility = "hidden";
                 aliens.push(aliens[i]); //recycles destroyed enemy image to end of array
