@@ -63,6 +63,15 @@ canvas {
     text-decoration: none;
 }
 
+.score {
+    position:absolute;
+        bottom: 5px;
+    color:whitesmoke;
+    font-family: "press start 2p";
+    font-size: medium;
+    visibility: hidden;
+}
+
 #spacecraft {
     position:absolute;
     width:80px;
