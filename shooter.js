@@ -64,6 +64,9 @@ let explodeArr = []; //holds explosion particles
 let fireArr = []; //torpedos object array
 let num = 3; //limits enemy numbers
 let kill = 100; //enemy life points
+let score = document.querySelector(".score");
+score.innerHTML = 0;
+let total = 0;
 
 let direction; //for fire and mouse position
 let fireVx = 1;
@@ -180,6 +183,8 @@ class Enemy{
 
 
             if(enemyArr[i].hit > kill) {
+
+                totalScore(50);
 
                 aliens[i].style.visibility = "hidden";
                 aliens.push(aliens[i]); //recycles destroyed enemy image to end of array
@@ -386,7 +391,9 @@ class Player {
                 music.play();
                 music.volume = 0.9;
                 music.loop = true;
-            },3500);
+                
+                totalScore(0);
+            },4000);
         }
     };
 }
@@ -769,6 +776,38 @@ function resolveCollision(particle, otherParticle) {
 }
 
 
+//makes score numbers move
+function totalScore(sum) {
+    
+    score.style.visibility = "visible";
+    total += sum
+
+    score.innerHTML = total;
+
+    if(slow) {
+        time = 15000; //15 seconds
+        score.style.bottom = "46%";
+    } else {
+        time = 3000; //3 seconds
+    }
+   
+    if(allow) {
+
+        allow = false; //prevents multiple intervals
+
+        off = setInterval(() => {
+            time -= 1000;
+        
+            if(time <= 0) {
+                score.style.visibility = "hidden";
+                clearInterval(off);
+                allow = true;
+            }
+        }, 1000);
+    }   
+}
+
+
 document.body.addEventListener("click", function(event) {
 
     event.preventDefault();
@@ -814,6 +853,7 @@ canvas.addEventListener("touchmove", function(event) {
 spacecraft.addEventListener("click", function() {
 
     portfolio.style.visibility = "visible";
+    score.style.visibility = "visible";
 
     time = 3000; //3 seconds, resets on click
     
@@ -826,6 +866,7 @@ spacecraft.addEventListener("click", function() {
         
             if(time <= 0) {
                 portfolio.style.visibility = "hidden";
+                score.style.visibility = "hidden";
                 clearInterval(off);
                 allow = true;
             }
