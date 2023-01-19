@@ -13,17 +13,18 @@
         <!-- Google fonts-->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" >
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Audiowide&display=swap" >
 
         <link rel="stylesheet" type="text/css" href="shooter.css" />
 
         <title>Space Shooter</title>
     </head>
 
-    <body onContextMenu="return false" >
+    <body onContextMenu="return false" > <!-- onContextMenu prevents right click menu -->
 
         <canvas id="canvas"></canvas>
 
+        <!-- draggable prevents mouse drag of image -->
         <figure class="craft">
             <img src="assets/spacecraft.png" draggable="false" id="spacecraft" />
         </figure>
