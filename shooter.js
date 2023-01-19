@@ -6,17 +6,17 @@ canvas.height = screenHeight;
 canvas.width = screenWidth;
 c = canvas.getContext("2d");
 
-const portfolio = document.querySelector(".portfolio");
 //used for portfolio interval
+const portfolio = document.querySelector(".portfolio");
 let allow = true; 
 let off; 
 let time = 0;
 
 //sound effects
-const explosion = new Audio("assets/sounds/explosion.mp3");
-const scratch = new Audio("assets/sounds/scratch.mp3");
-const splat = new Audio("assets/sounds/splat.mp3");
-let laser = new Audio("assets/sounds/laser.mp3"); 
+const explosion = new Audio("assets/sounds/explosion.mp3"); //player explosion
+const scratch = new Audio("assets/sounds/scratch.mp3"); //player damage
+const splat = new Audio("assets/sounds/splat.mp3"); //enemy exploding
+let laser = new Audio("assets/sounds/laser.mp3"); //laser fire
 
 //music tracks
 const battle = new Audio("assets/music/BattleReady.mp3");
@@ -26,12 +26,14 @@ const flying = new Audio("assets/music/AdventuresOfFlyingJack.mp3");
 const gotham = new Audio("assets/music/Gothamlicious.mp3");
 const honor = new Audio("assets/music/HonorBound.mp3");
 const think = new Audio("assets/music/ThinkAboutIt.mp3");
+let interaction = false; //when true, browser won't mute sounds
 
-const gameover = [fanfare, think]; //gameover music
-const soundtrack = [battle, buster, flying, gotham, honor]; //soundtrack
-let  music = soundtrack[randomRange(0, soundtrack.length - 1)]; //plays throughout gameplay
+const gameover = [fanfare, think]; //gameover music array
+const soundtrack = [battle, buster, flying, gotham, honor]; //soundtrack array
+let  music = soundtrack[randomRange(0, soundtrack.length - 1)]; //randomly plays during gameplay
 
-//enemy images
+
+//game images
 const alien1 = document.getElementById("alien1");
 const alien2 = document.getElementById("alien2");
 const alien3 = document.getElementById("alien3");
@@ -39,9 +41,9 @@ const alien4 = document.getElementById("alien4");
 const alien5 = document.getElementById("alien5");
 const alien6 = document.getElementById("alien6");
 const alien7 = document.getElementById("alien7");
+const spacecraft = document.getElementById("spacecraft"); //player image
+let aliens = [alien1, alien2, alien3, alien4, alien5, alien6, alien7]; //squid image array
 
-let aliens = [alien1, alien2, alien3, alien4, alien5, alien6, alien7];
-const spacecraft = document.getElementById("spacecraft"); //player
 
 //mouse location
 let mouse = { 
@@ -54,31 +56,33 @@ let alpha = 0.8; //animation opacity
 let animation; //can be used to start or stop animation
 let radians = 0.0002; //galaxy rotation rate
 let slow = false; //causes gameover screen
-let starArr = []; //galaxy array
+let starArr = []; //background galaxy array
 
-//game objects
+//enemy objects
 let count = 0; //for enemy deployment
 let enemyArr = []; //enemy object array
+let kill = 100; //used to set enemy life points
+let num = 3; // used to limit enemy numbers
+
+//fire objects
+let direction; //for fire and mouse position
+let fireArr = []; //torpedo objects array
+let fireVx = 1; //torpedo velocity x
+let fireVy = 1; //torpedo velocity y
+let isTouch = 'ontouchstart' in window; //used to check if touchscreen
+
+//score objects
 let ex; //for exact explosion location
 let explodeArr = []; //holds explosion particles
-let fireArr = []; //torpedos object array
-let num = 3; //limits enemy numbers
-let kill = 100; //enemy life points
-let score = document.querySelector(".score");
-score.innerHTML = 0;
-let total = 0;
+let score = document.querySelector(".score"); //score object
+score.innerHTML = 0; //display current score 
+let total = 0; //total score
 
-let direction; //for fire and mouse position
-let fireVx = 1;
-let fireVy = 1;
-let isTouch = 'ontouchstart' in window; //checks if it's a touchscreen
-
-let interaction = false; //if true, sound won't be muted
-let repair = 10;
-let user; //user interactivity
+//user objects
+let repair = 10; //user gains recovers life
+let user; //user object 
 let userVx; //user velocity x
 let userVy; //user velocity y
-
 
 //141 colors. The minimum is 0, the maximum is 140
 const colorArray = [
@@ -102,7 +106,7 @@ const colorArray = [
 ];
 
 
-//object blueprint
+//Enemy blueprint
 class Enemy{
     constructor (x,y,vx,vy,radius) {
     this.x = x;
@@ -111,11 +115,11 @@ class Enemy{
         x: vx,
         y: vy
     };
-    this.angle; //math formula to correctly follow in a circle;
+    this.angle; 
     this.hit = 0;
     this.radius = radius;
-    this.frictionY = 1 - this.size();
-    this.frictionX = 1 - this.size();
+    this.frictionY = 1 - this.size(); //slows y movement
+    this.frictionX = 1 - this.size(); //slows x movement
     this.collision = 1 - this.size(); //added to Resolve Collision
     this.mass = 1 + this.size(); //needed for Resolve collision     
     }
@@ -138,9 +142,7 @@ class Enemy{
         //sets ceiling & floor boundaries
         if(this.y + this.radius + this.velocity.y >= screenHeight || this.y + this.velocity.y <= this.radius) {
             this.velocity.y = -this.velocity.y * this.frictionY;  //reduces upward movement on floor bounce
-        } else {
-            this.velocity.y; //gravity
-        }
+        } 
 
         if(this.y + this.radius <= this.radius * 2 - 5) {   //rapidly unstick from ceiling
             this.y += 25;
@@ -168,44 +170,43 @@ class Enemy{
             this.x += 1; 
         }
 
-
         this.x += this.velocity.x; 
         this.y += this.velocity.y;
-
-
-        for(let i = 0; i < enemyArr.length; i++) {
+        
+    
+        for(let i = 0; i < enemyArr.length; i++) { 
             
             aliens[i].style.visibility = slow == false ? "visible" : "hidden";
             aliens[i].style.left = `${-screenWidth / 2 - (aliens[i].offsetWidth / 2) + enemyArr[i].x}px`;
             aliens[i].style.top = `${-screenHeight / 2 - (aliens[i].offsetHeight / 2) + enemyArr[i].y}px`;
             enemyArr[i].angle = Math.atan2(user.y - enemyArr[i].y, user.x - enemyArr[i].x);
-            enemyArr[i].angle *= 180 / Math.PI; 
+            enemyArr[i].angle *= 180 / Math.PI; //math formula to correctly follow in a circle;
 
 
             if(enemyArr[i].hit > kill) {
 
-                totalScore(100);
+                totalScore(100); //adds 100 to score
 
                 aliens[i].style.visibility = "hidden";
                 aliens.push(aliens[i]); //recycles destroyed enemy image to end of array
                 aliens.splice(i, 1); //removes dead enemy image
-                ex = {
+                ex = {  //sets explosion location
                     x: enemyArr[i].x,
                     y: enemyArr[i].y
                 }
                 enemyArr.splice(i, 1); //removes dead enemy movements
 
-                explode();
-                splat.play();
+                explode(); //explosion 
+                splat.play(); //explosion sound
                 count--; //reduces enemy count for creator
 
                 user.hit -= repair; //restores player life
                 if(user.hit < 0) {
-                    user.hit = 0;
+                    user.hit = 0; //player damage won't go below zero
                 }
             }
 
-            //enemies turn towards user 
+            //enemies turn towards user location
             if(enemyArr[i].x > user.x + aliens[i].offsetWidth / 2 && enemyArr[i].y > user.y + aliens[i].offsetHeight / 2) {
     
                 aliens[i].style.transform = `scaleX(1) scaleY(1) rotate(${-enemyArr[i].angle}deg)`;
@@ -228,27 +229,27 @@ class Enemy{
             //collision detection among user and enemies
             if(distance(user.x, user.y, enemyArr[i].x, enemyArr[i].y) - user.radius - enemyArr[i].radius < 0 && user.alive) {
 
-                user.hit++;
+                user.hit++; //player takes damage
 
                 userVx = user.x - enemyArr[i].x; //user x velocity set at impact
                  
                 userVy = user.y - enemyArr[i].y; //user y velocity set at impact
 
-                scratch.play();
+                scratch.play(); //player damage sound
 
                 resolveCollision(user, enemyArr[i]); //collision physics 
             }
 
 
             //accurate collision detection among enemies
-            if(this === enemyArr[i]) continue;
+            if(this === enemyArr[i]) continue; //object ignores itself
             if(distance(this.x, this.y, enemyArr[i].x, enemyArr[i].y) - this.radius - enemyArr[i].radius < 0) {
 
                 //activates if combined velocity is above threshold
                 if(this.velocity.y + this.velocity.x + enemyArr[i].velocity.y + enemyArr[i].velocity.x > 0.5 || 
                 this.velocity.y + this.velocity.x + enemyArr[i].velocity.y + enemyArr[i].velocity.x < -0.5) {
 
-                    resolveCollision(this, enemyArr[i]);
+                    resolveCollision(this, enemyArr[i]);  //collision physics 
                 }
             }
 
@@ -257,7 +258,7 @@ class Enemy{
 }
 
 
-//object blueprint
+//Explosion blueprint
 class Explosion {
     constructor(x, y, radius, color, velocity) {
         this.x = x;
@@ -283,14 +284,14 @@ class Explosion {
     update() {
 
         this.x += this.velocity.x * randomRange(1, 3); //sideways expansion force 
-        this.y += this.velocity.y * randomRange(1, 3); //velocity and dowards pull
+        this.y += this.velocity.y * randomRange(1, 3); //upwards expansion force 
         
         this.draw();
     }
 }
 
 
-//background galaxy blueprint
+//Galaxy blueprint
 class Galaxy {
     constructor(x, y, radius, color) {
         this.x = x;
@@ -323,7 +324,7 @@ class Player {
         this.y = y;
         this.alive = true;
         this.collision = 1;
-        this.hit = 0;
+        this.hit = 0; //user damage
         this.mass = 1;
         this.radius = 60; //radius of player object
         this.friction = 0.005;
@@ -350,7 +351,7 @@ class Player {
 
 
         //spacecraft animations
-        let rotation = direction; //cannot alter angle, used in fire position too
+        let rotation = direction; //directional angle, used in fire aiming position too
         rotation *= 180 / Math.PI; //math formula to correctly follow in a circle
     
         //makes ship face in mouse direction
@@ -370,29 +371,29 @@ class Player {
 
         if(user.hit > 800 && user.alive) {
             
-            music.pause();
-            
+            music.pause(); //music stops
+        
             spacecraft.style.visibility = "hidden";
                 
-            ex = {
+            ex = { //explosion location
                 x: this.x,
                 y: this.y
             }
 
-            this.alive = false;
-            explode(user);
+            this.alive = false; //user death
+            explode(user); //user explodes
 
-            explosion.play();
+            explosion.play(); 
             
             setTimeout(function() {
-                slow = true;
-
+                slow = true; //starts gameover screen
+                //selects gameover music
                 music = gameover[randomRange(0, gameover.length - 1)];
                 music.play();
-                music.volume = 0.9;
-                music.loop = true;
+                music.volume = 0.9; //sets volume
+                music.loop = true; //plays on loop
                 
-                totalScore(0);
+                totalScore(0); //displays current score
             },4000);
         }
     };
@@ -415,7 +416,8 @@ class Torpedo {
         this.target = {
             x: tx * this.velocity.x,
             y: ty * this.velocity.y
-        };
+        };    
+
     }
 
     draw(previous) {
@@ -452,14 +454,14 @@ class Torpedo {
 
             if(distance(this.x, this.y, obj.x, obj.y) - obj.radius + 15 < 0) {
 
-                fireVx = this.x - obj.x;  //user x velocity set at impact
+                fireVx = this.x - obj.x;  //torpedo x velocity set at impact
              
-                fireVy = this.y - obj.y; //user y velocity set at impact
+                fireVy = this.y - obj.y; //torpedo y velocity set at impact
                 
                 resolveCollision(this, obj);
-                obj.hit++;
+                obj.hit++; //enemy damage
 
-                this.target = { 
+                this.target = { //fire collision reaction
                     x: Math.cos(Math.PI * 2 + randomRange(-10,10)) * Math.random(), //creates circular particle positions
                     y: Math.sin(Math.PI * 2 + randomRange(-10,10)) * Math.random() //creates curved particle positions
                 };    
@@ -493,6 +495,7 @@ function animate() {
     c.restore();
 
     //music volume decreases as player dies
+    //screen spins faster and frame rate slows as player dies
     if(user.hit > 800 && slow) {
         if(alpha > 0.001) {
             alpha -= 0.0025;
@@ -532,7 +535,7 @@ function animate() {
         alpha = 0.8;
     }
     
-
+    //enemy objects
     enemyArr.forEach(obj => {
         obj.update(enemyArr);
     });
@@ -542,6 +545,7 @@ function animate() {
         obj.update(); 
     });
 
+    //explosions
     explodeArr.forEach(obj => {
         
         obj.update();
@@ -549,7 +553,7 @@ function animate() {
         setTimeout(function() { 
             
             obj.alpha -= 0.05;
-            
+            //deletes objects when visibility drops
             if(obj.alpha < 0) {
                 explodeArr.splice(obj, 1);
             }
@@ -596,15 +600,15 @@ function creator() {
             count++;   
         }
         
-        if(music.ended) {
+        if(music.ended) {   //select a new track if current ended
             music = soundtrack[randomRange(0, soundtrack.length - 1)];
         }
 
         if(interaction && music.paused && user.alive) {
-            music.play();
+            music.play(); //plays new track if user is alive & music stopped
         }
 
-    },  10000 + randomRange(-5000, 5000)); //enemy intervals
+    },  10000 + randomRange(-5000, 5000)); //enemy launch intervals
 
 }
 
@@ -662,17 +666,19 @@ function display() {
 function explode(who) {
 
     let sparks;
-    let x = ex.x; 
-    let y = ex.y;
-    let sparkCount = who == user ? 750 : 500;
-    let splatArr = [];
+    let x = ex.x; //explosion location x
+    let y = ex.y; //explosion location y
+    let sparkCount = who == user ? 750 : 500; //explosion particle numbers
+    let splatArr = []; 
 
-    if(who == user) {
-        splatArr = ["beige","bisque","cornsilk","floralwhite","ghostwhite","ivory","midnightblue",
+    if(who == user) {   //user explosion colors
+        splatArr = [
+            "beige","bisque","cornsilk","floralwhite","ghostwhite","ivory","midnightblue",
             "oldlace","palegoldenrod","papayawhip","seashell","snow","wheat","wheat","white"
         ];
-    } else {
-        splatArr = ["aliceblue","aliceblue","aqua","aqua","cyan","cyan","darkblue","darkorange",
+    } else {    //squid explosion colors
+        splatArr = [
+            "aliceblue","aliceblue","aqua","aqua","cyan","cyan","darkblue","darkorange",
             "darkmagenta","darkslateblue","deepskyblue","deepskyblue","dodgerblue","floralwhite","ghostwhite",
             "ghostwhite","indigo","indigo","ivory","ivory","lightblue","lightblue","lightcyan","lightcyan",
             "lightskyblue","lightskyblue","mediumblue","midnightblue","navy","orangered","powderblue","seashell",
@@ -683,7 +689,7 @@ function explode(who) {
     for(let i = 0; i < sparkCount; i++) {
 
         let color = splatArr[randomRange(0, splatArr.length - 1)];
-        let radius = randomRange(0.5, 1);
+        let radius = randomRange(0.5, 1); //particle size
         let radians = Math.PI * 2 / sparkCount;
 
         sparks = new Explosion(x, y, radius, color, { 
@@ -776,7 +782,7 @@ function resolveCollision(particle, otherParticle) {
 }
 
 
-//makes score numbers move
+//displays and makes adds to score
 function totalScore(sum) {
     
     score.style.visibility = "visible";
@@ -784,7 +790,7 @@ function totalScore(sum) {
 
     score.innerHTML = total;
 
-    if(slow) {
+    if(slow) { //on gameover
         time = 15000; //15 seconds
         score.style.bottom = "46%";
     } else {
@@ -824,12 +830,6 @@ document.body.addEventListener("click", function(event) {
 });
 
 
-portfolio.addEventListener("click", function() {
-
-    window.open("https://dany-cervantes-portfolio.pages.dev/");
-})
-
-
 canvas.addEventListener("mousemove", function(event) {
     
     //gets mouse angle from ship
@@ -847,6 +847,12 @@ canvas.addEventListener("touchmove", function(event) {
     
     //sets ship direction
     direction = Math.atan2(mouse.y - user.y, mouse.x - user.x);
+});
+
+
+portfolio.addEventListener("click", function() {
+
+    window.open("https://dany-cervantes-portfolio.pages.dev/");
 });
 
 
