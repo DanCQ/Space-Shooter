@@ -35,8 +35,8 @@ body {
     min-width:100vw;
     overflow: hidden;
     user-select: none;
-    -webkit-user-select: none;
     -webkit-touch-callout:none;
+    -webkit-user-select: none;
 }
 
 canvas {
@@ -67,7 +67,7 @@ canvas {
     position:absolute;
         bottom: 5px;
     color:whitesmoke;
-    font-family: "press start 2p";
+    font-family: "press start 2p", "audiowide";
     font-size: medium;
     visibility: hidden;
 }
