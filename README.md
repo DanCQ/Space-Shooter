@@ -3,6 +3,6 @@ A space shooting game.
 
 <a href="https://space-shooter.pages.dev/">Space Shooter</a>
 
-I'm trying to teach myself how to make an interactive game.
+Try to survive the invasion of the Space Mollusks.
 
-Using everything I've learned so far.
+Enemy kills restore a small amount of the player's life.
