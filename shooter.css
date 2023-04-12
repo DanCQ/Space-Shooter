@@ -32,7 +32,7 @@ body {
         justify-content: center;
     margin:0;
     height:100vh;
-    width:100%;
+    width:100vw;
     user-select: none;
     -webkit-touch-callout:none;
     -webkit-user-select: none;
