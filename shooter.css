@@ -37,6 +37,7 @@ body {
         align-items: center;
         justify-content: center;
     height:100vh;
+    overflow: hidden;
     width:100%;
     user-select: none;
     -webkit-touch-callout:none;
