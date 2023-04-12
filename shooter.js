@@ -880,7 +880,7 @@ spacecraft.addEventListener("click", function() {
     }
 });
 
-
+*/
 //prevents infite loop when loading page on mobile
 setTimeout(function() {
 
@@ -896,7 +896,7 @@ setTimeout(function() {
         },100);
     });
 }, 25); 
-
+*/
 
 window.onload = function() {
 
