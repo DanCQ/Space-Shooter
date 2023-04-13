@@ -557,7 +557,7 @@ function animate() {
             if(obj.alpha < 0) {
                 explodeArr.splice(obj, 1);
             }
-        }, 1000);
+        }, 500);
     });
 
     //player object
@@ -892,11 +892,9 @@ setTimeout(function() {
             screenWidth = window.innerWidth;
             canvas.height = screenHeight;
             canvas.width = screenWidth;
-            //display(); //redeploy stars
         },100);
     });
 }, 25); 
-
 
 
 window.onload = function() {
