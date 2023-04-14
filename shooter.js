@@ -34,6 +34,7 @@ let  music = soundtrack[randomRange(0, soundtrack.length - 1)]; //randomly plays
 
 
 //game images
+const alien0 = document.getElementById("alien0");
 const alien1 = document.getElementById("alien1");
 const alien2 = document.getElementById("alien2");
 const alien3 = document.getElementById("alien3");
@@ -42,7 +43,7 @@ const alien5 = document.getElementById("alien5");
 const alien6 = document.getElementById("alien6");
 const alien7 = document.getElementById("alien7");
 const spacecraft = document.getElementById("spacecraft"); //player image
-let aliens = [alien1, alien2, alien3, alien4, alien5, alien6, alien7]; //squid image array
+let aliens = [alien0, alien1, alien2, alien3, alien4, alien5, alien6, alien7]; //squid image array
 
 
 //mouse location
