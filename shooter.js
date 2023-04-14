@@ -214,7 +214,12 @@ class Enemy{
             
             } else if(enemyArr[i].x > user.x + aliens[i].offsetWidth / 2 && enemyArr[i].y < user.y + aliens[i].offsetHeight / 2) {
     
-                aliens[i].style.transform = `scaleX(-1) scaleY(-1) rotate(${-enemyArr[i].angle}deg)`;
+                if(aliens[i] == aliens[0]) {
+                    aliens[i].style.transform = `scaleX(1) scaleY(-1) rotate(${-enemyArr[i].angle}deg)`;
+                } else {
+                    aliens[i].style.transform = `scaleX(-1) scaleY(-1) rotate(${-enemyArr[i].angle}deg)`;
+                }
+                
             }
 
             if(enemyArr[i].x < user.x + aliens[i].offsetWidth / 2 && enemyArr[i].y > user.y + aliens[i].offsetHeight / 2) {
