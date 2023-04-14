@@ -580,6 +580,7 @@ function creator() {
     
     //player object
     user = new Player(screenWidth / 2, screenHeight / 2);
+    spacecraft.style.visibility = "visible";
 
     //enemy objects
     setInterval(function() {
